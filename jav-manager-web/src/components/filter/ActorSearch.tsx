@@ -2,9 +2,8 @@ import { useState, useCallback } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Check, X } from "lucide-react"
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command"
+import { API_BASE } from "@/lib/constants"
 import { cn } from "@/lib/utils"
-
-const API_BASE = "http://localhost:5000/api"
 
 interface Actor {
   id: number

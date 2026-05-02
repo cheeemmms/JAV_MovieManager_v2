@@ -3,9 +3,9 @@ import { VirtuosoGrid, type VirtuosoGridHandle } from "react-virtuoso"
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { MovieCard } from "./MovieCard"
 import { useFilterStore } from "@/stores/filterStore"
+import { API_BASE } from "@/lib/constants"
 import type { FilterResponse } from "@/types/filter"
 
-const API_BASE = "http://localhost:5000/api"
 const PAGE_SIZE = 30
 
 async function fetchMovies(

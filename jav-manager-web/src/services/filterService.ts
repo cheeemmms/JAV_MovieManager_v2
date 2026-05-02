@@ -1,7 +1,6 @@
+import { API_BASE } from "@/lib/constants"
 import type { FilterRequest, FilterResponse } from "@/types/filter"
 import type { MovieViewModel } from "@/types/movie"
-
-const API_BASE = "http://localhost:5000/api"
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${url}`, {

@@ -20,6 +20,8 @@ artifacts/
 *.userosscache
 *.sln.docstates
 *.userprefs
+Logs/
+*.log
 
 # ===== SQLite =====
 *.db

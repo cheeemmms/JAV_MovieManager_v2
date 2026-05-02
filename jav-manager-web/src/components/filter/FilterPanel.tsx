@@ -16,9 +16,8 @@ import { MultiSelect } from "./MultiSelect"
 import { ActorSearch } from "./ActorSearch"
 import { SavedFilters } from "./SavedFilters"
 import { useFilterStore } from "@/stores/filterStore"
+import { API_BASE } from "@/lib/constants"
 import { cn } from "@/lib/utils"
-
-const API_BASE = "http://localhost:5000/api"
 
 interface FilterOptions {
   genres: string[]

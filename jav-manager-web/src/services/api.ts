@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:5000/api"
+import { API_BASE } from "@/lib/constants"
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${url}`, {

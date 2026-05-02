@@ -2,9 +2,8 @@ import { useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { Play, Heart, Star } from "lucide-react"
 import { BlurhashImage } from "./BlurhashImage"
+import { API_BASE } from "@/lib/constants"
 import type { MovieViewModel } from "@/types/movie"
-
-const API_BASE = "http://localhost:5000/api"
 
 interface MovieCardProps {
   movie: MovieViewModel
