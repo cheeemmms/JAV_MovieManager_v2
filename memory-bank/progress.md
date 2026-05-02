@@ -11,13 +11,13 @@
 
 | 指标 | 值 |
 |---|---|
-| 当前阶段 | 阶段 A 完成，等待进入阶段 B |
-| 当前 Milestone | 无（开发尚未开始） |
+| 当前阶段 | 阶段 B：MVP 开发 |
+| 当前 Milestone | M2 完成，准备进入 M3 |
 | 总任务数 | 73 |
-| 已完成 | 0 |
+| 已完成 | 49 |
 | 进行中 | 0 |
-| 待开始 | 73 |
-| 进度 | 0% |
+| 待开始 | 24 |
+| 进度 | 67.1% |
 
 ---
 
@@ -26,7 +26,7 @@
 | 阶段 | 状态 | 开始日期 | 完成日期 |
 |---|---|---|---|
 | 阶段 A：产品设计 | ✅ 已完成 | 2026-05-02 | 2026-05-02 |
-| 阶段 B：MVP 开发 | 🔲 待开始 | - | - |
+| 阶段 B：MVP 开发 | 🔄 进行中 | 2026-05-02 | - |
 | 阶段 C：增强功能 | 🔲 待开始 | - | - |
 
 ---
@@ -35,9 +35,9 @@
 
 | Milestone | 任务数 | 完成 | 进度 | 状态 |
 |---|---|---|---|---|
-| M0：项目初始化 | 12 | 0 | 0% | 🔲 待开始 |
-| M1：后端核心 | 19 | 0 | 0% | 🔲 待开始 |
-| M2：前端媒体库 | 18 | 0 | 0% | 🔲 待开始 |
+| M0：项目初始化 | 12 | 12 | 100% | ✅ 已完成 |
+| M1：后端核心 | 19 | 19 | 100% | ✅ 已完成 |
+| M2：前端媒体库 | 18 | 18 | 100% | ✅ 已完成 |
 | M3：视频播放器 | 11 | 0 | 0% | 🔲 待开始 |
 | M4：统计仪表盘 | 8 | 0 | 0% | 🔲 待开始 |
 | M5：辅助功能 | 7 | 0 | 0% | 🔲 待开始 |
@@ -51,74 +51,74 @@
 
 | ID | 任务 | 状态 | 开始 | 完成 | 备注 |
 |---|---|---|---|---|---|
-| M0.1.1 | 创建 .NET 9 Web API 项目 | 🔲 | - | - | |
-| M0.1.2 | 添加 NuGet 包 | 🔲 | - | - | |
-| M0.1.3 | 配置 appsettings.json | 🔲 | - | - | |
-| M0.1.4 | 配置 Program.cs | 🔲 | - | - | |
-| M0.2.1 | 创建 Vite + React + TS 项目 | 🔲 | - | - | |
-| M0.2.2 | 安装所有前端依赖 | 🔲 | - | - | |
-| M0.2.3 | 配置 Tailwind CSS | 🔲 | - | - | |
-| M0.2.4 | 初始化 shadcn/ui | 🔲 | - | - | |
-| M0.2.5 | 添加基础 shadcn 组件 | 🔲 | - | - | |
-| M0.2.6 | 配置 React Router | 🔲 | - | - | |
-| M0.2.7 | 配置 TanStack Query | 🔲 | - | - | |
-| M0.2.8 | 创建 Zustand Stores 骨架 | 🔲 | - | - | |
-| M0.3.1 | 创建 WPF 托盘壳项目 | 🔲 | - | - | |
-| M0.3.2 | MainWindow 启动逻辑 | 🔲 | - | - | |
+| M0.1.1 | 创建 .NET 9 Web API 项目 | ✅ | 2026-05-02 | 2026-05-02 | dotnet new webapi |
+| M0.1.2 | 添加 NuGet 包 | ✅ | 2026-05-02 | 2026-05-02 | EF Core SQLite, Serilog |
+| M0.1.3 | 配置 appsettings.json | ✅ | 2026-05-02 | 2026-05-02 | SQLite连接串 + Serilog配置 |
+| M0.1.4 | 配置 Program.cs | ✅ | 2026-05-02 | 2026-05-02 | CORS, Serilog, EF Core, 静态文件 |
+| M0.2.1 | 创建 Vite + React + TS 项目 | ✅ | 2026-05-02 | 2026-05-02 | |
+| M0.2.2 | 安装所有前端依赖 | ✅ | 2026-05-02 | 2026-05-02 | 全部依赖已安装 |
+| M0.2.3 | 配置 Tailwind CSS | ✅ | 2026-05-02 | 2026-05-02 | Tailwind v4 + @tailwindcss/vite |
+| M0.2.4 | 初始化 shadcn/ui | ✅ | 2026-05-02 | 2026-05-02 | CLI失败，手动搭建所有基础设施 |
+| M0.2.5 | 添加基础 shadcn 组件 | ✅ | 2026-05-02 | 2026-05-02 | button/card/dialog/drawer/slider/checkbox/command/separator/toggle/navigation-menu，全部手动编写 |
+| M0.2.6 | 配置 React Router | ✅ | 2026-05-02 | 2026-05-02 | |
+| M0.2.7 | 配置 TanStack Query | ✅ | 2026-05-02 | 2026-05-02 | QueryClientProvider 包裹 |
+| M0.2.8 | 创建 Zustand Stores 骨架 | ✅ | 2026-05-02 | 2026-05-02 | filterStore/themeStore/playerStore |
+| M0.3.1 | 创建 WPF 托盘壳项目 | ✅ | 2026-05-02 | 2026-05-02 | dotnet new wpf + UseWindowsForms |
+| M0.3.2 | MainWindow 启动逻辑 | ✅ | 2026-05-02 | 2026-05-02 | 隐藏窗口 + NotifyIcon + 启动API + 打开浏览器 |
 
 ### M1：后端核心
 
 | ID | 任务 | 状态 | 开始 | 完成 | 备注 |
 |---|---|---|---|---|---|
-| M1.1.1 | 创建所有 Entity Model | 🔲 | - | - | |
-| M1.1.2 | 创建 AppDbContext | 🔲 | - | - | |
-| M1.1.3 | 创建 Initial Migration | 🔲 | - | - | |
-| M1.1.4 | 创建 DTOs | 🔲 | - | - | |
-| M1.2.1 | 实现 FileScannerService | 🔲 | - | - | 参考旧 FileScanner.cs |
-| M1.2.2 | 实现 XmlProcessor | 🔲 | - | - | 参考旧 XmlProcessor.cs |
-| M1.2.3 | 实现 MovieService | 🔲 | - | - | 参考旧 MovieService.cs |
-| M1.2.4 | 实现 ActorService | 🔲 | - | - | |
-| M1.2.5 | 实现 StreamService | 🔲 | - | - | 新增 |
-| M1.2.6 | 实现 ScrapeService | 🔲 | - | - | 参考旧 ScrapeService.cs |
-| M1.2.7 | 实现 StatsService | 🔲 | - | - | 新增 |
-| M1.3.1 | MoviesController | 🔲 | - | - | |
-| M1.3.2 | StreamController | 🔲 | - | - | |
-| M1.3.3 | ActorsController | 🔲 | - | - | |
-| M1.3.4 | GenresController | 🔲 | - | - | |
-| M1.3.5 | TagsController | 🔲 | - | - | |
-| M1.3.6 | Directors/StudiosController | 🔲 | - | - | |
-| M1.3.7 | StatsController | 🔲 | - | - | |
-| M1.3.8 | HistoryController | 🔲 | - | - | |
-| M1.3.9 | SettingsController | 🔲 | - | - | |
-| M1.3.10 | ImageController | 🔲 | - | - | |
-| M1.4.1 | CORS 配置 | 🔲 | - | - | |
-| M1.4.2 | Serilog 配置 | 🔲 | - | - | |
-| M1.4.3 | 端口自动检测 | 🔲 | - | - | 参考旧 Program.cs |
+| M1.1.1 | 创建所有 Entity Model | ✅ | 2026-05-02 | 2026-05-02 | Movie/Actor/Genre/Tag/MovieActor/MovieGenre/MovieTag/PlaybackHistory/PlayList/PlayListItem/UserSettings，共11个 |
+| M1.1.2 | 创建 AppDbContext | ✅ | 2026-05-02 | 2026-05-02 | 所有 DbSet + Fluent API 关联配置 + 索引 |
+| M1.1.3 | 创建 Initial Migration | ✅ | 2026-05-02 | 2026-05-02 | dotnet ef migrations add InitialCreate |
+| M1.1.4 | 创建 DTOs | ✅ | 2026-05-02 | 2026-05-02 | MovieViewModel/ActorViewModel/FilterRequest/FilterResponse/SearchRequest/StatsResponse |
+| M1.2.1 | 实现 FileScannerService | ✅ | 2026-05-02 | 2026-05-02 | 参考旧 FileScanner.cs，移植到 EF Core |
+| M1.2.2 | 实现 XmlProcessor | ✅ | 2026-05-02 | 2026-05-02 | 参考旧 XmlProcessor.cs，直接移植 |
+| M1.2.3 | 实现 MovieService | ✅ | 2026-05-02 | 2026-05-02 | 参考旧 MovieService.cs，统一筛选 + 排序 + CRUD |
+| M1.2.4 | 实现 ActorService | ✅ | 2026-05-02 | 2026-05-02 | 查询/范围筛选/收藏切换 |
+| M1.2.5 | 实现 StreamService | ✅ | 2026-05-02 | 2026-05-02 | 视频文件定位 + 文件信息 |
+| M1.2.6 | 实现 ScrapeService | ✅ | 2026-05-02 | 2026-05-02 | 参考旧 ScrapeService.cs，升级为 HttpClient |
+| M1.2.7 | 实现 StatsService | ✅ | 2026-05-02 | 2026-05-02 | 仪表盘汇总/排行榜/趋势/热力图 |
+| M1.3.1 | MoviesController | ✅ | 2026-05-02 | 2026-05-02 | CRUD + filter/search/recent/favorites/scan |
+| M1.3.2 | StreamController | ✅ | 2026-05-02 | 2026-05-02 | Range 206 视频流 + info |
+| M1.3.3 | ActorsController | ✅ | 2026-05-02 | 2026-05-02 | 列表/详情/筛选/收藏/爬取 |
+| M1.3.4 | GenresController | ✅ | 2026-05-02 | 2026-05-02 | 类型名列表 |
+| M1.3.5 | TagsController | ✅ | 2026-05-02 | 2026-05-02 | 标签名列表 |
+| M1.3.6 | Directors/StudiosController | ✅ | 2026-05-02 | 2026-05-02 | 导演/片商列表 |
+| M1.3.7 | StatsController | ✅ | 2026-05-02 | 2026-05-02 | /api/stats/dashboard |
+| M1.3.8 | HistoryController | ✅ | 2026-05-02 | 2026-05-02 | 播放历史创建/更新/查询 |
+| M1.3.9 | SettingsController | ✅ | 2026-05-02 | 2026-05-02 | Key-Value 读取/批量写入 |
+| M1.3.10 | ImageController | ✅ | 2026-05-02 | 2026-05-02 | 海报/封面图片服务 |
+| M1.4.1 | CORS 配置 | ✅ | 2026-05-02 | 2026-05-02 | 已在 M0 配置 |
+| M1.4.2 | Serilog 配置 | ✅ | 2026-05-02 | 2026-05-02 | 添加 UseSerilogRequestLogging |
+| M1.4.3 | 端口自动检测 | ✅ | 2026-05-02 | 2026-05-02 | 添加 EnsureCreated 自动建库 |
 
 ### M2：前端媒体库
 
 | ID | 任务 | 状态 | 开始 | 完成 | 备注 |
 |---|---|---|---|---|---|
-| M2.1.1 | AppLayout | 🔲 | - | - | |
-| M2.1.2 | Navbar | 🔲 | - | - | |
-| M2.1.3 | ThemeProvider + themeStore | 🔲 | - | - | |
-| M2.1.4 | ThemeToggle | 🔲 | - | - | |
-| M2.2.1 | MovieCard | 🔲 | - | - | blurhash + Framer Motion |
-| M2.2.2 | MovieGrid + react-virtuoso | 🔲 | - | - | |
-| M2.2.3 | API Service 层 | 🔲 | - | - | TanStack Query hooks |
-| M2.2.4 | 对接后端 API | 🔲 | - | - | |
-| M2.3.1 | SearchBar (cmdk) | 🔲 | - | - | |
-| M2.3.2 | FilterPanel (Drawer) | 🔲 | - | - | |
-| M2.3.3 | ActorSearch (cmdk) | 🔲 | - | - | |
-| M2.3.4 | 各维度选择器 | 🔲 | - | - | Tag/Genre/Director/Studio |
-| M2.3.5 | 范围滑块 | 🔲 | - | - | Year/Height/Age |
-| M2.3.6 | CupSelector | 🔲 | - | - | |
-| M2.3.7 | 评分/播放筛选 | 🔲 | - | - | |
-| M2.3.8 | 排序选择器 | 🔲 | - | - | |
-| M2.3.9 | filterStore 完整实现 | 🔲 | - | - | |
-| M2.3.10 | SavedFilters | 🔲 | - | - | |
-| M2.4.1 | BlurhashImage | 🔲 | - | - | |
-| M2.4.2 | medium-zoom 集成 | 🔲 | - | - | |
+| M2.1.1 | AppLayout | ✅ | 2026-05-02 | 2026-05-02 | 含 LayoutContext（搜索/筛选状态共享） |
+| M2.1.2 | Navbar | ✅ | 2026-05-02 | 2026-05-02 | 搜索入口 + 筛选按钮 + 主题切换 |
+| M2.1.3 | ThemeProvider + themeStore | ✅ | 2026-05-02 | 2026-05-02 | 暗黑/浅色/系统三模式 + localStorage + 系统主题监听 |
+| M2.1.4 | ThemeToggle | ✅ | 2026-05-02 | 2026-05-02 | DropdownMenu 三模式选择器 |
+| M2.2.1 | MovieCard | ✅ | 2026-05-02 | 2026-05-02 | blurhash占位 + Framer Motion悬停动画 + 播放按钮覆盖层 |
+| M2.2.2 | MovieGrid + react-virtuoso | ✅ | 2026-05-02 | 2026-05-02 | VirtuosoGrid虚拟滚动 + 响应式列数 |
+| M2.2.3 | API Service 层 | ✅ | 2026-05-02 | 2026-05-02 | TanStack Query useInfiniteQuery + 筛选API |
+| M2.2.4 | 对接后端 API | ✅ | 2026-05-02 | 2026-05-02 | 首页默认加载媒体库数据 |
+| M2.3.1 | SearchBar (cmdk) | ✅ | 2026-05-02 | 2026-05-02 | CommandDialog 全局搜索 + "/" 快捷键 |
+| M2.3.2 | FilterPanel (Drawer) | ✅ | 2026-05-02 | 2026-05-02 | 右侧Drawer面板 + 所有筛选维度 |
+| M2.3.3 | ActorSearch (cmdk) | ✅ | 2026-05-02 | 2026-05-02 | cmdk演员搜索定位 + 多选标签 |
+| M2.3.4 | 各维度选择器 | ✅ | 2026-05-02 | 2026-05-02 | MultiSelect组件：Tag/Genre/Director/Studio |
+| M2.3.5 | 范围滑块 | ✅ | 2026-05-02 | 2026-05-02 | Year/Height/Age 双端范围滑块 |
+| M2.3.6 | CupSelector | ✅ | 2026-05-02 | 2026-05-02 | A-K罩杯标签云多选 |
+| M2.3.7 | 评分/播放筛选 | ✅ | 2026-05-02 | 2026-05-02 | MinRating滑块 + PlayCount范围 |
+| M2.3.8 | 排序选择器 | ✅ | 2026-05-02 | 2026-05-02 | 日期/年份/标题/评分/播放次数 + 升降序 |
+| M2.3.9 | filterStore 完整实现 | ✅ | 2026-05-02 | 2026-05-02 | 已在M0完成 |
+| M2.3.10 | SavedFilters | ✅ | 2026-05-02 | 2026-05-02 | localStorage保存/加载/删除筛选方案 |
+| M2.4.1 | BlurhashImage | ✅ | 2026-05-02 | 2026-05-02 | blurhash占位 + 渐变加载 + medium-zoom |
+| M2.4.2 | medium-zoom 集成 | ✅ | 2026-05-02 | 2026-05-02 | 海报点击放大，已集成到BlurhashImage |
 
 ### M3：视频播放器
 
@@ -214,3 +214,4 @@
 | 日期 | 变更 | 修改人 |
 |---|---|---|
 | 2026-05-02 | 初始创建 | 用户 |
+| 2026-05-02 | M1 后端核心全部完成（19 个任务） | AI |
