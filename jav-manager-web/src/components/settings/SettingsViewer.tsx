@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/incompatible-library */
 import { useEffect } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
@@ -29,8 +28,7 @@ export function SettingsViewer() {
     register,
     handleSubmit,
     reset,
-    setValue,
-    watch,
+    control,
     getValues,
     formState: { errors, isDirty },
   } = useForm<SettingsForm>({
@@ -42,10 +40,6 @@ export function SettingsViewer() {
       forceUpdate: false,
     },
   })
-
-  const dateRange = watch("dateRange")
-  const scrapeActorInfo = watch("scrapeActorInfo")
-  const forceUpdate = watch("forceUpdate")
 
   useEffect(() => {
     if (settings) {
@@ -143,30 +137,40 @@ export function SettingsViewer() {
               <label htmlFor="dateRange" className="text-sm font-medium">
                 Date Range Filter
               </label>
-              <select
-                id="dateRange"
-                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                value={dateRange}
-                onChange={(e) => setValue("dateRange", Number(e.target.value), { shouldDirty: true })}
-              >
-                <option value={-1}>All time</option>
-                <option value={1}>Today</option>
-                <option value={7}>Last 7 days</option>
-                <option value={30}>Last 30 days</option>
-                <option value={90}>Last 90 days</option>
-              </select>
+              <Controller
+                name="dateRange"
+                control={control}
+                render={({ field }) => (
+                  <select
+                    id="dateRange"
+                    className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    value={field.value}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                  >
+                    <option value={-1}>All time</option>
+                    <option value={1}>Today</option>
+                    <option value={7}>Last 7 days</option>
+                    <option value={30}>Last 30 days</option>
+                    <option value={90}>Last 90 days</option>
+                  </select>
+                )}
+              />
               <p className="text-xs text-muted-foreground">
                 Only scan movie files modified within this time range
               </p>
             </div>
 
             <div className="flex items-center gap-2">
-              <Checkbox
-                id="scrapeActorInfo"
-                checked={scrapeActorInfo}
-                onCheckedChange={(checked) =>
-                  setValue("scrapeActorInfo", checked === true, { shouldDirty: true })
-                }
+              <Controller
+                name="scrapeActorInfo"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    id="scrapeActorInfo"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
               />
               <label htmlFor="scrapeActorInfo" className="text-sm font-medium cursor-pointer">
                 Scrape actor information
@@ -174,12 +178,16 @@ export function SettingsViewer() {
             </div>
 
             <div className="flex items-center gap-2">
-              <Checkbox
-                id="forceUpdate"
-                checked={forceUpdate}
-                onCheckedChange={(checked) =>
-                  setValue("forceUpdate", checked === true, { shouldDirty: true })
-                }
+              <Controller
+                name="forceUpdate"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    id="forceUpdate"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
               />
               <label htmlFor="forceUpdate" className="text-sm font-medium cursor-pointer">
                 Force update existing movies

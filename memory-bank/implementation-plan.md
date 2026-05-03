@@ -2,7 +2,7 @@
 
 > 目标项目：`D:\Personal_file\VibeCoding\Program\JAV_MovieManager_v2`
 > 旧项目参考：`D:\Personal_file\VibeCoding\clone\JAV_MovieManager`
-> 当前阶段：**阶段 B MVP 开发中，M0-M5 已完成，M6 待开始**
+> 当前阶段：**阶段 B MVP 开发已完成 ✅，阶段 C 增强功能待开始**
 
 ---
 
@@ -319,3 +319,4 @@ M6 (部署)     ←── 所有功能完成后                            │
 | 日期 | 变更 | 决策人 |
 |---|---|---|
 | 2026-05-02 | 初始创建，从 design-document.md 独立并扩展 | 用户 |
+| 2026-05-03 | M6 全部完成，MVP 开发结束 | AI |

@@ -36,9 +36,24 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+var urls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS")
+    ?? builder.Configuration.GetValue<string>("ApiSettings:Urls")
+    ?? "http://localhost:5000";
+app.Urls.Add(urls);
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var cs = db.Database.GetConnectionString() ?? "";
+    var dataSource = cs.Split(';').Select(s => s.Trim())
+        .FirstOrDefault(s => s.StartsWith("Data Source", StringComparison.OrdinalIgnoreCase));
+    if (dataSource is not null)
+    {
+        var dbFile = dataSource.Split('=', 2)[1].Trim();
+        var dir = Path.GetDirectoryName(dbFile);
+        if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+            Directory.CreateDirectory(dir);
+    }
     db.Database.EnsureCreated();
 }
 

@@ -22,6 +22,8 @@ artifacts/
 *.userprefs
 Logs/
 *.log
+wwwroot/
+publish/
 
 # ===== SQLite =====
 *.db
