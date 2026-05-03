@@ -223,20 +223,18 @@ export function VideoPlayer() {
         <ArrowLeft className="h-6 w-6" />
       </button>
 
-      <div className="relative min-h-screen flex flex-col">
-        <div className="flex-1">
-          <DPlayerWrapper
-            videoUrl={streamUrl}
-            posterUrl={posterUrl}
-            subtitleUrl={subtitleUrl}
-            autoplay={!showResumePrompt}
-            onReady={handleReady}
-            onTimeUpdate={handleTimeUpdate}
-            onPlay={handlePlay}
-            onPause={handlePause}
-            onEnded={handleEnded}
-          />
-        </div>
+      <div className="relative" style={{ height: "calc(100vh - 8rem)" }}>
+        <DPlayerWrapper
+          videoUrl={streamUrl}
+          posterUrl={posterUrl}
+          subtitleUrl={subtitleUrl}
+          autoplay={!showResumePrompt}
+          onReady={handleReady}
+          onTimeUpdate={handleTimeUpdate}
+          onPlay={handlePlay}
+          onPause={handlePause}
+          onEnded={handleEnded}
+        />
 
         <AnimatePresence>
           {showResumePrompt && (
@@ -293,39 +291,39 @@ export function VideoPlayer() {
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
 
-        <div className="shrink-0 bg-gradient-to-t from-black/95 to-transparent px-6 pb-6 pt-12">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <h1 className="text-lg font-semibold text-white truncate">
-                {movie.title}
-              </h1>
-              <p className="mt-1 text-sm text-white/60">
-                {movie.imdbId}
-                {movie.year > 0 && ` · ${movie.year}`}
-                {movie.runtime > 0 && ` · ${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m`}
-                {movie.director && ` · ${movie.director}`}
+      <div className="shrink-0 bg-gradient-to-t from-black/95 to-transparent px-6 pb-6 pt-12">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h1 className="text-lg font-semibold text-white truncate">
+              {movie.title}
+            </h1>
+            <p className="mt-1 text-sm text-white/60">
+              {movie.imdbId}
+              {movie.year > 0 && ` · ${movie.year}`}
+              {movie.runtime > 0 && ` · ${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m`}
+              {movie.director && ` · ${movie.director}`}
+            </p>
+            {movie.actors.length > 0 && (
+              <p className="mt-1 text-xs text-white/40 truncate">
+                {movie.actors.slice(0, 5).join(", ")}
               </p>
-              {movie.actors.length > 0 && (
-                <p className="mt-1 text-xs text-white/40 truncate">
-                  {movie.actors.slice(0, 5).join(", ")}
-                </p>
-              )}
-            </div>
-            <button
-              onClick={handleToggleFavorite}
-              className="shrink-0 rounded-full p-2 hover:bg-white/10 transition-colors"
-              aria-label={movie.favorite ? "Remove from favorites" : "Add to favorites"}
-            >
-              <Heart
-                className={`h-6 w-6 transition-colors ${
-                  movie.favorite
-                    ? "fill-red-500 text-red-500"
-                    : "text-white/70 hover:text-red-400"
-                }`}
-              />
-            </button>
+            )}
           </div>
+          <button
+            onClick={handleToggleFavorite}
+            className="shrink-0 rounded-full p-2 hover:bg-white/10 transition-colors"
+            aria-label={movie.favorite ? "Remove from favorites" : "Add to favorites"}
+          >
+            <Heart
+              className={`h-6 w-6 transition-colors ${
+                movie.favorite
+                  ? "fill-red-500 text-red-500"
+                  : "text-white/70 hover:text-red-400"
+              }`}
+            />
+          </button>
         </div>
       </div>
 
