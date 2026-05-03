@@ -1,18 +1,6 @@
-export interface DashboardStats {
-  totalMovies: number
-  totalPlayCount: number
-  totalWatchDuration: number
-  totalActorsWatched: number
-  favoriteCount: number
-  topActors: TopItem[]
-  topTags: TopItem[]
-  recentTrend: TrendItem[]
-}
-
 export interface TopItem {
   name: string
   count: number
-  duration: number
 }
 
 export interface TrendItem {
@@ -21,13 +9,21 @@ export interface TrendItem {
 }
 
 export interface HeatmapItem {
-  date: string
+  month: string
+  year: number
   count: number
 }
 
-export interface MovieStats {
-  imdbId: string
+export interface StatsResponse {
+  totalMovies: number
+  totalActors: number
+  totalGenres: number
+  totalPlayTime: number
   totalPlays: number
-  totalDuration: number
-  averagePercentage: number
+  averageRating: number
+  topActors: TopItem[]
+  topGenres: TopItem[]
+  topStudios: TopItem[]
+  trend: TrendItem[]
+  heatmap: HeatmapItem[]
 }

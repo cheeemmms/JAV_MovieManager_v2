@@ -4,6 +4,7 @@ import { Toaster } from "sonner"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { MovieGrid } from "@/components/movies/MovieGrid"
 import { VideoPlayer } from "@/components/player/VideoPlayer"
+import { Dashboard } from "@/components/dashboard/Dashboard"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,14 +23,6 @@ function ActorGrid() {
   return (
     <div className="container py-8">
       <h1 className="text-2xl font-bold">Actors</h1>
-    </div>
-  )
-}
-
-function Dashboard() {
-  return (
-    <div className="container py-8">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
     </div>
   )
 }
