@@ -67,6 +67,7 @@ export function VideoPlayer() {
     staleTime: 60_000,
   })
 
+
   const streamUrl = `${API_BASE}/stream/${imdbId}`
   const subtitleUrl = `${API_BASE}/stream/${imdbId}/subtitle`
   const posterUrl = movie?.posterFileLocation
@@ -222,107 +223,109 @@ export function VideoPlayer() {
         <ArrowLeft className="h-6 w-6" />
       </button>
 
-      <div className="min-h-[50vh]">
-        <DPlayerWrapper
-          videoUrl={streamUrl}
-          posterUrl={posterUrl}
-          subtitleUrl={subtitleUrl}
-          autoplay={!showResumePrompt}
-          onReady={handleReady}
-          onTimeUpdate={handleTimeUpdate}
-          onPlay={handlePlay}
-          onPause={handlePause}
-          onEnded={handleEnded}
-        />
-      </div>
+      <div className="relative min-h-screen flex flex-col">
+        <div className="flex-1">
+          <DPlayerWrapper
+            videoUrl={streamUrl}
+            posterUrl={posterUrl}
+            subtitleUrl={subtitleUrl}
+            autoplay={!showResumePrompt}
+            onReady={handleReady}
+            onTimeUpdate={handleTimeUpdate}
+            onPlay={handlePlay}
+            onPause={handlePause}
+            onEnded={handleEnded}
+          />
+        </div>
 
-      <AnimatePresence>
-        {showResumePrompt && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 z-20 flex items-center justify-center bg-black/80"
-          >
-            <div className="rounded-lg border bg-card p-6 max-w-sm text-card-foreground shadow-lg">
-              <p className="text-lg font-semibold">
-                Resume from {Math.round(movie.progress)}%?
-              </p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                You have saved progress for this movie
-              </p>
-              <div className="mt-5 flex gap-3 justify-end">
+        <AnimatePresence>
+          {showResumePrompt && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-20 flex items-center justify-center bg-black/80"
+            >
+              <div className="rounded-lg border bg-card p-6 max-w-sm text-card-foreground shadow-lg">
+                <p className="text-lg font-semibold">
+                  Resume from {Math.round(movie.progress)}%?
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  You have saved progress for this movie
+                </p>
+                <div className="mt-5 flex gap-3 justify-end">
+                  <button
+                    onClick={handleStartFromBeginning}
+                    className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
+                  >
+                    Start Over
+                  </button>
+                  <button
+                    onClick={handleResume}
+                    className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+                  >
+                    Resume
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {hevcWarning && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20"
+            >
+              <div className="flex items-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-4 py-2 text-sm text-yellow-200 backdrop-blur">
+                <AlertTriangle className="h-4 w-4 text-yellow-400" />
+                <span>H.265/HEVC not supported by this browser. Video playback may fail.</span>
                 <button
-                  onClick={handleStartFromBeginning}
-                  className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
+                  onClick={() => setHevcWarning(false)}
+                  className="ml-2 text-yellow-300 hover:text-yellow-100"
                 >
-                  Start Over
-                </button>
-                <button
-                  onClick={handleResume}
-                  className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-                >
-                  Resume
+                  Dismiss
                 </button>
               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      <AnimatePresence>
-        {hevcWarning && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20"
-          >
-            <div className="flex items-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-4 py-2 text-sm text-yellow-200 backdrop-blur">
-              <AlertTriangle className="h-4 w-4 text-yellow-400" />
-              <span>H.265/HEVC not supported by this browser. Video playback may fail.</span>
-              <button
-                onClick={() => setHevcWarning(false)}
-                className="ml-2 text-yellow-300 hover:text-yellow-100"
-              >
-                Dismiss
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="shrink-0 bg-gradient-to-t from-black/95 to-transparent px-6 pb-6 pt-12">
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <h1 className="text-lg font-semibold text-white truncate">
-              {movie.title}
-            </h1>
-            <p className="mt-1 text-sm text-white/60">
-              {movie.imdbId}
-              {movie.year > 0 && ` · ${movie.year}`}
-              {movie.runtime > 0 && ` · ${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m`}
-              {movie.director && ` · ${movie.director}`}
-            </p>
-            {movie.actors.length > 0 && (
-              <p className="mt-1 text-xs text-white/40 truncate">
-                {movie.actors.slice(0, 5).join(", ")}
+        <div className="shrink-0 bg-gradient-to-t from-black/95 to-transparent px-6 pb-6 pt-12">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <h1 className="text-lg font-semibold text-white truncate">
+                {movie.title}
+              </h1>
+              <p className="mt-1 text-sm text-white/60">
+                {movie.imdbId}
+                {movie.year > 0 && ` · ${movie.year}`}
+                {movie.runtime > 0 && ` · ${Math.floor(movie.runtime / 60)}h ${movie.runtime % 60}m`}
+                {movie.director && ` · ${movie.director}`}
               </p>
-            )}
+              {movie.actors.length > 0 && (
+                <p className="mt-1 text-xs text-white/40 truncate">
+                  {movie.actors.slice(0, 5).join(", ")}
+                </p>
+              )}
+            </div>
+            <button
+              onClick={handleToggleFavorite}
+              className="shrink-0 rounded-full p-2 hover:bg-white/10 transition-colors"
+              aria-label={movie.favorite ? "Remove from favorites" : "Add to favorites"}
+            >
+              <Heart
+                className={`h-6 w-6 transition-colors ${
+                  movie.favorite
+                    ? "fill-red-500 text-red-500"
+                    : "text-white/70 hover:text-red-400"
+                }`}
+              />
+            </button>
           </div>
-          <button
-            onClick={handleToggleFavorite}
-            className="shrink-0 rounded-full p-2 hover:bg-white/10 transition-colors"
-            aria-label={movie.favorite ? "Remove from favorites" : "Add to favorites"}
-          >
-            <Heart
-              className={`h-6 w-6 transition-colors ${
-                movie.favorite
-                  ? "fill-red-500 text-red-500"
-                  : "text-white/70 hover:text-red-400"
-              }`}
-            />
-          </button>
         </div>
       </div>
 

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react"
 import DPlayer from "dplayer"
+import type { DPlayerOptions } from "dplayer"
 
 interface DPlayerWrapperProps {
   videoUrl: string
@@ -35,7 +36,7 @@ export function DPlayerWrapper({
   useEffect(() => {
     if (!containerRef.current) return
 
-    const options: DPlayer.DPlayerOptions = {
+    const options: DPlayerOptions = {
       container: containerRef.current,
       autoplay,
       video: {

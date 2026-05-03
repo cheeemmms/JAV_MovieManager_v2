@@ -1,5 +1,5 @@
 declare module "dplayer" {
-  interface DPlayerOptions {
+  export interface DPlayerOptions {
     container: HTMLElement | null
     live?: boolean
     autoplay?: boolean
