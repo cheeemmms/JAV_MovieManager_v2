@@ -46,6 +46,24 @@ export function MovieGrid() {
     return 6
   }, [containerWidth])
 
+  const filters = useFilterStore((s) => ({
+    searchTerm: s.searchTerm,
+    actors: s.actors,
+    genres: s.genres,
+    tags: s.tags,
+    directors: s.directors,
+    studios: s.studios,
+    yearFrom: s.yearFrom,
+    yearTo: s.yearTo,
+    cups: s.cups,
+    ratingFrom: s.ratingFrom,
+    playedMin: s.playedMin,
+    playedMax: s.playedMax,
+    favoriteOnly: s.favoriteOnly,
+    sortBy: s.sortBy,
+    sortOrder: s.sortOrder,
+  }))
+
   const {
     data,
     fetchNextPage,
@@ -54,7 +72,7 @@ export function MovieGrid() {
     isLoading,
     isError,
   } = useInfiniteQuery({
-    queryKey: ["movies", "grid"],
+    queryKey: ["movies", "grid", filters],
     queryFn: ({ pageParam }) => fetchMovies(pageParam, PAGE_SIZE),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
@@ -116,7 +134,7 @@ export function MovieGrid() {
   }
 
   return (
-    <div ref={containerRef} className="container py-4">
+    <div ref={containerRef} className="w-full max-w-[1920px] mx-auto px-4 py-4">
       <VirtuosoGrid
         ref={gridRef}
         style={{ height: "calc(100vh - 4rem)" }}

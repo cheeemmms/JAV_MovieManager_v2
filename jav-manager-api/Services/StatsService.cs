@@ -21,9 +21,13 @@ public class StatsService
         var totalPlays = await _context.PlaybackHistories.CountAsync();
         var totalPlayTime = await _context.PlaybackHistories.SumAsync(ph => (long)ph.Duration);
 
-        var averageRating = totalMovies > 0
-            ? await _context.Movies.Where(m => m.Rating > 0).AverageAsync(m => m.Rating)
-            : 0;
+        double averageRating = 0;
+        if (totalMovies > 0)
+        {
+            var ratedMovies = _context.Movies.Where(m => m.Rating > 0);
+            if (await ratedMovies.AnyAsync())
+                averageRating = await ratedMovies.AverageAsync(m => m.Rating);
+        }
 
         var topActors = await _context.MovieActors
             .GroupBy(ma => ma.Actor.Name)

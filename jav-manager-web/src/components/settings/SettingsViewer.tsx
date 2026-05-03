@@ -24,7 +24,8 @@ export function SettingsViewer() {
   const saveMutation = useSaveSettings()
   const scanMutation = useTriggerScan()
   const [loadingTimedOut, setLoadingTimedOut] = useState(false)
-  const loadingStartRef = useRef(Date.now())
+  const loadingStartRef = useRef(0)
+  const hasInitRef = useRef(false)
 
   const {
     register,
@@ -46,7 +47,6 @@ export function SettingsViewer() {
   useEffect(() => {
     if (isLoading) {
       loadingStartRef.current = Date.now()
-      setLoadingTimedOut(false)
     }
   }, [isLoading])
 
@@ -57,7 +57,8 @@ export function SettingsViewer() {
   }, [isLoading])
 
   useEffect(() => {
-    if (settings) {
+    if (settings && !hasInitRef.current) {
+      hasInitRef.current = true
       reset({
         movieDirectory: settings.MovieDirectory || "",
         dateRange: Number(settings.ScanDateRange) || -1,

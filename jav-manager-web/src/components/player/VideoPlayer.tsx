@@ -85,8 +85,8 @@ export function VideoPlayer() {
 
   const handleBack = useCallback(() => {
     endRecording(progressRef.current)
-    navigate(-1)
-  }, [navigate, endRecording])
+    navigate(`/movie/${imdbId}`)
+  }, [navigate, endRecording, imdbId])
 
   const handleToggleFavorite = useCallback(() => {
     if (imdbId) {
@@ -176,7 +176,7 @@ export function VideoPlayer() {
         <ArrowLeft className="h-6 w-6" />
       </button>
 
-      <div className="flex-1">
+      <div className="flex-1 min-h-0 overflow-hidden">
         <DPlayerWrapper
           videoUrl={streamUrl}
           posterUrl={posterUrl}

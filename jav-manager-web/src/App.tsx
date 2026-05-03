@@ -7,6 +7,7 @@ import { MovieDetail } from "@/components/movies/MovieDetail"
 import { VideoPlayer } from "@/components/player/VideoPlayer"
 import { Dashboard } from "@/components/dashboard/Dashboard"
 import { SettingsViewer } from "@/components/settings/SettingsViewer"
+import { ActorGrid } from "@/components/actors/ActorGrid"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,14 +20,6 @@ const queryClient = new QueryClient({
 
 function HomePage() {
   return <MovieGrid />
-}
-
-function ActorGrid() {
-  return (
-    <div className="container py-8">
-      <h1 className="text-2xl font-bold">Actors</h1>
-    </div>
-  )
 }
 
 function Settings() {
