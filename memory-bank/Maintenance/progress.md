@@ -13,7 +13,7 @@
 | 阶段 C：增强功能 | ✅ 已完成 | 2026-05-03 | 2026-05-03 |
 | 阶段 D：UX 增强 | ✅ 已完成 | 2026-05-03 | 2026-05-03 |
 | 阶段 E：修复与增强 | ✅ 已完成 | 2026-05-03 | 2026-05-03 |
-| 阶段 F：回归修复 + 新功能 | ✅ 已完成 | 2026-05-03 | 2026-05-03 |
+| 阶段 F：回归修复 + 新功能 | 🔄 回归 | 2026-05-03 | — |
 
 ---
 
@@ -100,11 +100,11 @@ sessionStorage 保存 VirtuosoGrid 滚动位置。`history.action === "POP"` 恢
 |---|---|---|---|---|
 | 1 | F01 | Settings 保存失败修复（连锁修复头像 204） | SettingsController.cs | ✅ |
 | 2 | F02 | 过度滚动强化修复 | index.css | ✅ |
-| 3 | F03 | 浏览器返回位置恢复修复 | MovieGrid.tsx | ✅ |
-| 4 | F04 | 播放页同女优推荐 | VideoPlayer.tsx | ✅ |
-| 5 | F05 | 播放器字幕支持 | StreamController + DPlayerWrapper | ✅ |
+| 3 | F03 | 浏览器返回位置恢复修复 | MovieGrid.tsx | ❌ |
+| 4 | F04 | 播放页同女优推荐 | VideoPlayer.tsx | ❌ |
+| 5 | F05 | 播放器字幕支持 | StreamController + DPlayerWrapper | ❌ |
 
-**依頼**：F01 是根因（修复后 E01 自动解决）；F02/F03 独立；F04/F05 独立新功能。
+**回归分析**：F03 root cause — `containerWidth=0` 导致第一次 effect 用错误 `itemsPerRow` 计算 rowIndex 并清除 sessionStorage，后续正确值到达时数据已丢失。F04 root cause — 需运行时排查数据流（actor 名匹配 / API 响应）。F05 root cause — 后端无字幕文件时返回 204，DPlayer 收到 204 不显示字幕按钮。
 
 ### F01：Settings 保存失败
 
@@ -152,3 +152,4 @@ VideoPlayer 中取第一个女优 → `POST /api/movies/filter` → MovieCard Gr
 | 2026-05-03 | 阶段 E 全部完成：6 项全部 ✅（tsc 0 / eslint 0 / dotnet build 0） |
 | 2026-05-03 | 阶段 F 规划完成：5 项任务（F01-F05）待开始 |
 | 2026-05-03 | 阶段 F 全部完成：5 项全部 ✅（tsc 0 / eslint 0 / dotnet build 0） |
+| 2026-05-03 | 用户验证 F03/F04/F05 均未解决 → 回归，深度分析根因 |

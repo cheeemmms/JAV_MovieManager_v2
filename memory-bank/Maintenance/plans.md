@@ -319,6 +319,7 @@ const handleActorClick = (name: string) => {
 | 2026-05-03 | 阶段 E 全部实施完成 ✅ |
 | 2026-05-03 | 阶段 F 5 项：F01 Settings连锁修复 / F02 过度滚动加固 / F03 返回位置修复 / F04 同女优推荐 / F05 字幕支持 |
 | 2026-05-03 | 阶段 F 全部实施完成 ✅ |
+| 2026-05-03 | 阶段 F 回归：F03/F04/F05 深度排查 + 修正方案 |
 
 ---
 
@@ -445,3 +446,71 @@ const dp = new DPlayer({
 | StreamController.cs | | | | | +20 |
 | StreamService.cs | | | | | +30 |
 | jav-manager-api.csproj | | | | | +1（Ude.NetStandard）|
+
+---
+
+## 阶段 F 回归修复
+
+> 创建日期：2026-05-03（用户验证后）
+>
+> F01/F02 已确认修复；F03/F04/F05 回归。
+
+| # | 项目 | 根因 | 修复方案 |
+|---|---|---|---|
+| F03-R | 返回位置恢复 | `containerWidth=0` 导致第一次 effect 用错误 `itemsPerRow` + `clearScrollPosition()` 太早 | 回退为 `initialTopMostItemIndex` + 不 clear |
+| F04-R | 同女优推荐 | 需运行时排查（actor 名匹配 / API 响应 / 布局） | 加调试日志定位断点 |
+| F05-R | 字幕支持 | 后端无文件时返回 204 → DPlayer 不渲染按钮 | 后端始终返回有效 VTT（空内容也行） |
+
+---
+
+### F03-R 修正方案（确定）
+
+**文件**：`MovieGrid.tsx`
+
+**修改**：
+1. 删除 `useEffect` 中的 `scrollToIndex` 逻辑
+2. 在 `initialTopMostItemIndex` 的 `useMemo` 中直接计算：POP 时从 sessionStorage 读取 movieIndex → 除以 `itemsPerRow` → 传给 VirtuosoGrid
+3. 删除 `clearScrollPosition()` 调用 — sessionStorage 自然覆盖
+
+```tsx
+const initialTopMostItemIndex = useMemo(() => {
+  if (navigationType === "PUSH") {
+    clearScrollPosition()
+    return 0
+  }
+  if (navigationType === "POP" && itemsPerRow > 0) {
+    const saved = loadScrollPosition()
+    if (saved && saved > 0) {
+      return Math.floor(saved / itemsPerRow)
+    }
+  }
+  return 0
+}, [navigationType, itemsPerRow])
+```
+
+### F04-R 排查方案（需运行时数据）
+
+**文件**：`VideoPlayer.tsx`
+
+**排查步骤**：
+1. 在 `useQuery.queryFn` 开头加 `console.log("sameActor query:", primaryActor, imdbId)`
+2. 在 API 响应后加 `console.log("sameActor response:", data)`
+3. 在渲染条件前加 `console.log("sameActorMovies:", sameActorMovies?.length)`
+4. 运行后查看 Console + Network 面板确定断点
+
+### F05-R 修正方案（确定）
+
+**文件**：`StreamController.cs` + `StreamService.cs`
+
+**修改**：
+1. `GetSubtitle` 无文件时返回空 VTT 内容（`WEBVTT\n\n`），状态码 200，而非 204
+2. 扩展字幕查找：也匹配 `{movieFileName}_*` 模式
+
+```csharp
+// Before
+if (subtitle == null) return NoContent();
+
+// After
+if (subtitle == null)
+    return File(Encoding.UTF8.GetBytes("WEBVTT\n\n"), "text/vtt; charset=utf-8");
+```

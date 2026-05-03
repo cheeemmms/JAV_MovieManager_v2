@@ -136,15 +136,17 @@ export function MovieGrid() {
     return 0
   }, [navigationType])
 
+  const restoreAttemptedRef = useRef(false)
+
   useEffect(() => {
-    if (navigationType === "POP" && rows.length > 0 && movies.length > 0) {
+    if (navigationType === "POP" && rows.length > 0 && movies.length > 0 && !restoreAttemptedRef.current) {
+      restoreAttemptedRef.current = true
       const savedMovieIndex = loadScrollPosition()
       if (savedMovieIndex && savedMovieIndex > 0) {
         const rowIndex = Math.floor(savedMovieIndex / itemsPerRow)
         if (rowIndex < rows.length) {
           const timer = setTimeout(() => {
             gridRef.current?.scrollToIndex(rowIndex)
-            clearScrollPosition()
           }, 200)
           return () => clearTimeout(timer)
         }
@@ -214,7 +216,7 @@ export function MovieGrid() {
         itemContent={(_, row) => {
           const firstMovie = row[0]
           const movieIndex = movies.indexOf(firstMovie)
-          if (movieIndex >= 0 && movieIndex > scrollMovieIndexRef.current) {
+          if (movieIndex >= 0) {
             scrollMovieIndexRef.current = movieIndex
           }
 
