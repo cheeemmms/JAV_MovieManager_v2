@@ -39,10 +39,10 @@ export function MovieGrid() {
   }, [])
 
   const itemsPerRow = useMemo(() => {
-    if (containerWidth < 640) return 2
-    if (containerWidth < 1024) return 3
-    if (containerWidth < 1280) return 4
-    if (containerWidth < 1536) return 5
+    if (containerWidth < 500) return 2
+    if (containerWidth < 700) return 3
+    if (containerWidth < 960) return 4
+    if (containerWidth < 1200) return 5
     return 6
   }, [containerWidth])
 
@@ -100,7 +100,7 @@ export function MovieGrid() {
   if (isLoading) {
     return (
       <div className="container py-8">
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {Array.from({ length: 12 }).map((_, i) => (
             <div key={i} className="aspect-[2/3] animate-pulse rounded-lg bg-muted" />
           ))}

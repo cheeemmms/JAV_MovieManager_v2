@@ -15,10 +15,6 @@ export function MovieDetail() {
   const { data: movie, isLoading, isError } = useMovie(imdbId || "")
   const toggleFavorite = useToggleFavorite()
 
-  const posterUrl = movie?.posterFileLocation
-    ? `${API_BASE}/image/poster/${movie.imdbId}`
-    : ""
-
   const fanartUrl = movie?.fanArtLocation
     ? `${API_BASE}/image/fanart/${movie.imdbId}`
     : ""
@@ -104,12 +100,12 @@ export function MovieDetail() {
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="shrink-0 w-64 mx-auto md:mx-0"
+                className="shrink-0 w-full max-w-md mx-auto md:mx-0"
               >
                 <BlurhashImage
-                  src={posterUrl}
+                  src={fanartUrl}
                   alt={movie.title}
-                  className="w-full aspect-[2/3] rounded-lg shadow-2xl"
+                  className="w-full aspect-video rounded-lg shadow-2xl"
                   zoomable
                 />
                 <div className="mt-4 flex gap-2">

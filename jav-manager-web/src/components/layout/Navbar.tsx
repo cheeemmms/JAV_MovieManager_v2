@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useThemeStore, type Theme } from "@/stores/themeStore"
+import { useFilterStore } from "@/stores/filterStore"
 import { useLayout } from "./AppLayout"
 
 const themeIcons: Record<Theme, typeof Sun> = {
@@ -30,7 +31,11 @@ export function Navbar() {
   return (
     <nav className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-14 items-center px-4">
-        <Link to="/" className="mr-6 font-bold text-lg">
+        <Link
+          to="/"
+          className="mr-6 font-bold text-lg"
+          onClick={() => useFilterStore.getState().resetFilters()}
+        >
           JAV Manager
         </Link>
         <div className="flex items-center gap-2">

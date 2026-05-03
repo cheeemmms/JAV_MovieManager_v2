@@ -1,13 +1,7 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { ChevronDown, RotateCcw } from "lucide-react"
+import { ChevronDown, RotateCcw, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer"
 import { Slider } from "@/components/ui/slider"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
@@ -56,8 +50,7 @@ const DIM_TABS: { key: DimTab; label: string }[] = [
 const MAX_VISIBLE_OPTIONS = 12
 
 interface FilterPanelProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  onClose: () => void
 }
 
 function SectionHeader({
@@ -95,7 +88,7 @@ function SectionHeader({
   )
 }
 
-export function FilterPanel({ open, onOpenChange }: FilterPanelProps) {
+export function FilterPanel({ onClose }: FilterPanelProps) {
   const {
     actors,
     genres,
@@ -172,22 +165,27 @@ export function FilterPanel({ open, onOpenChange }: FilterPanelProps) {
   }
 
   const handleApply = () => {
-    onOpenChange(false)
+    onClose()
   }
 
   const handleReset = () => {
     resetFilters()
-    onOpenChange(false)
+    onClose()
   }
 
   const totalSelected = actors.length + genres.length + tags.length + directors.length + studios.length
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="fixed right-0 top-0 h-full w-[480px] rounded-l-xl sm:max-w-[480px]">
-        <DrawerHeader className="border-b">
-          <DrawerTitle>Filters</DrawerTitle>
-        </DrawerHeader>
+    <div className="h-full flex flex-col">
+      <div className="border-b px-4 py-3 flex items-center justify-between">
+        <h2 className="text-lg font-semibold">Filters</h2>
+        <button
+          onClick={onClose}
+          className="rounded-md p-1 hover:bg-accent transition-colors"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      </div>
 
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-1">
           <SectionHeader
@@ -503,7 +501,6 @@ export function FilterPanel({ open, onOpenChange }: FilterPanelProps) {
             </Button>
           </div>
         </div>
-      </DrawerContent>
-    </Drawer>
+    </div>
   )
 }
