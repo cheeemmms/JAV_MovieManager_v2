@@ -15,6 +15,10 @@ export function MovieDetail() {
   const { data: movie, isLoading, isError } = useMovie(imdbId || "")
   const toggleFavorite = useToggleFavorite()
 
+  const posterUrl = movie?.posterFileLocation
+    ? `${API_BASE}/image/poster/${movie.imdbId}`
+    : ""
+
   const fanartUrl = movie?.fanArtLocation
     ? `${API_BASE}/image/fanart/${movie.imdbId}`
     : ""
@@ -100,17 +104,16 @@ export function MovieDetail() {
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="shrink-0 w-full max-w-md mx-auto md:mx-0"
+                className="shrink-0 w-48 mx-auto md:mx-0"
               >
                 <BlurhashImage
-                  src={fanartUrl}
+                  src={posterUrl}
                   alt={movie.title}
-                  className="w-full aspect-video rounded-lg shadow-2xl"
-                  zoomable
+                  className="w-full aspect-[2/3] rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
                 />
                 <div className="mt-4 flex gap-2">
-                  <Button className="flex-1" onClick={handlePlay}>
-                    <Play className="mr-2 h-4 w-4" />
+                  <Button className="flex-1 min-w-[140px]" size="lg" onClick={handlePlay}>
+                    <Play className="mr-2 h-5 w-5 fill-current" />
                     Play
                   </Button>
                   <Button
@@ -136,10 +139,10 @@ export function MovieDetail() {
                 transition={{ delay: 0.1 }}
                 className="flex-1 min-w-0"
               >
-                <h1 className="text-3xl font-bold tracking-tight">{movie.title}</h1>
-                <p className="mt-1 text-lg text-muted-foreground font-mono">
+                <p className="text-sm text-muted-foreground font-mono tracking-wide">
                   {movie.imdbId}
                 </p>
+                <h1 className="mt-1 text-3xl font-bold tracking-tight">{movie.title}</h1>
 
                 <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
                   {movie.year > 0 && (
@@ -286,7 +289,7 @@ export function MovieDetail() {
                             {movie.genres.map((genre) => (
                               <span
                                 key={genre}
-                                className="inline-flex items-center rounded-md bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary cursor-pointer hover:ring-2 hover:ring-primary transition-shadow"
+                                className="inline-flex items-center rounded-md bg-accent/50 px-2.5 py-0.5 text-xs font-medium text-foreground/80 cursor-pointer hover:bg-accent hover:text-foreground hover:-translate-y-0.5 transition-all"
                                 onClick={() => handleFilterClick("genres", genre)}
                               >
                                 {genre}
@@ -306,7 +309,7 @@ export function MovieDetail() {
                             {movie.tags.map((tag) => (
                               <span
                                 key={tag}
-                                className="inline-flex items-center rounded-md bg-secondary px-2.5 py-0.5 text-xs font-medium cursor-pointer hover:ring-2 hover:ring-primary transition-shadow"
+                                className="inline-flex items-center rounded-md bg-accent/50 px-2.5 py-0.5 text-xs font-medium text-foreground/80 cursor-pointer hover:bg-accent hover:text-foreground hover:-translate-y-0.5 transition-all"
                                 onClick={() => handleFilterClick("tags", tag)}
                               >
                                 {tag}
