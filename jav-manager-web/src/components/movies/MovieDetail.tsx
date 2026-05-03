@@ -76,11 +76,11 @@ export function MovieDetail() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-40 bg-background overflow-y-auto"
+      className="fixed inset-0 z-40 bg-background overflow-y-scroll snap-y snap-mandatory"
     >
-      <div className="relative">
+      <section className="relative min-h-screen snap-start flex flex-col">
         {fanartUrl && (
-          <div className="absolute inset-0 h-80 overflow-hidden">
+          <div className="absolute inset-0 overflow-hidden">
             <img
               src={fanartUrl}
               alt=""
@@ -90,7 +90,7 @@ export function MovieDetail() {
           </div>
         )}
 
-        <div className="relative">
+        <div className="relative flex-1">
           <div className="max-w-[1400px] mx-auto px-6 py-6">
             <button
               onClick={handleBack}
@@ -181,17 +181,6 @@ export function MovieDetail() {
                         style={{ width: `${movie.progress}%` }}
                       />
                     </div>
-                  </div>
-                )}
-
-                {movie.plot && (
-                  <div className="mt-6">
-                    <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                      Synopsis
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-foreground/80">
-                      {movie.plot}
-                    </p>
                   </div>
                 )}
 
@@ -325,7 +314,46 @@ export function MovieDetail() {
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {(fanartUrl || movie.plot) && (
+        <section className="min-h-screen snap-start flex items-center justify-center bg-background">
+          <div className="max-w-[1400px] mx-auto px-6 py-12 w-full">
+            {fanartUrl && (
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5 }}
+                className="max-w-xl mx-auto"
+              >
+                <img
+                  src={fanartUrl}
+                  alt=""
+                  className="w-full rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+                />
+              </motion.div>
+            )}
+
+            {movie.plot && (
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5, delay: 0.15 }}
+                className="mt-8 max-w-2xl mx-auto"
+              >
+                <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground text-center">
+                  Synopsis
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-foreground/80 text-center">
+                  {movie.plot}
+                </p>
+              </motion.div>
+            )}
+          </div>
+        </section>
+      )}
     </motion.div>
   )
 }

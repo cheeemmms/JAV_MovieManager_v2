@@ -120,3 +120,35 @@ Loading 骨架屏的 grid 响应式类需同步更新。
 | 日期 | 变更 |
 |---|---|
 | 2026-05-03 | 初始创建，从 phase-d-roadmap 提取详细方案 |
+| 2026-05-03 | D06 修复 + D07 磁吸双区域补充方案 |
+
+---
+
+## D06：修复 medium-zoom bug + 布局重构
+
+**文件**：`MovieDetail.tsx`
+
+**Bug 根因**：`BlurhashImage` 的 `zoomable` 启用 `medium-zoom`，组件卸载后原生 DOM overlay 残留。
+
+**修复**：
+- 移除 `zoomable` 属性
+- 主图从 fanart 改回 poster（`aspect-[2/3]` + `shadow-[0_10px_30px_rgba(0,0,0,0.5)]`）
+- 信息层级：番号在上（小字淡色）→ 主标题在下（大字粗体）
+- Play 按钮加宽：`size="lg"` + `min-w-[140px]` + `fill-current`
+- Tags/Genres 美化：`bg-accent/50` → hover `bg-accent` + `-translate-y-0.5` + `transition-all`
+
+---
+
+## D07：详情页磁吸双区域（snap-scroll + Fanart + Synopsis）
+
+**文件**：`MovieDetail.tsx`
+
+**目标**：进入详情页仅展示 Hero 区域；下滑时磁吸到第二区域展示大海报和简介。
+
+**技术方案**：
+- 外层容器：`overflow-y-scroll snap-y snap-mandatory`
+- 区域一（Hero）：`<section min-h-screen snap-start>`，模糊背景 `inset-0` 铺满全屏
+- 区域二（Fanart+Synopsis）：`<section min-h-screen snap-start>`
+  - Fanart：`max-w-xl mx-auto` 居中 + `shadow-[0_10px_30px_rgba(0,0,0,0.5)]`
+  - Synopsis：Fanart 下方居中展示
+- 动画：`whileInView` 淡入 + 上移，`viewport: { once: true }`
