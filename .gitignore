@@ -39,3 +39,6 @@ Desktop.ini
 *.swp
 *.swo
 .vscode/
+
+# ===== Claude Code =====
+CLAUDE.md

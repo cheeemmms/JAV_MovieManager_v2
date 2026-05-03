@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Toaster } from "sonner"
 import { AppLayout } from "@/components/layout/AppLayout"
 import { MovieGrid } from "@/components/movies/MovieGrid"
+import { VideoPlayer } from "@/components/player/VideoPlayer"
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,14 +38,6 @@ function MovieDetail() {
   return (
     <div className="container py-8">
       <h1 className="text-2xl font-bold">Movie Detail</h1>
-    </div>
-  )
-}
-
-function VideoPlayer() {
-  return (
-    <div className="h-screen bg-black flex items-center justify-center">
-      <h1 className="text-white text-2xl">Video Player</h1>
     </div>
   )
 }
