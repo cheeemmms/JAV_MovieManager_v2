@@ -46,23 +46,25 @@ export function MovieGrid() {
     return 6
   }, [containerWidth])
 
-  const filters = useFilterStore((s) => ({
-    searchTerm: s.searchTerm,
-    actors: s.actors,
-    genres: s.genres,
-    tags: s.tags,
-    directors: s.directors,
-    studios: s.studios,
-    yearFrom: s.yearFrom,
-    yearTo: s.yearTo,
-    cups: s.cups,
-    ratingFrom: s.ratingFrom,
-    playedMin: s.playedMin,
-    playedMax: s.playedMax,
-    favoriteOnly: s.favoriteOnly,
-    sortBy: s.sortBy,
-    sortOrder: s.sortOrder,
-  }))
+  const filterKey = useFilterStore((s) =>
+    JSON.stringify({
+      searchTerm: s.searchTerm,
+      actors: s.actors,
+      genres: s.genres,
+      tags: s.tags,
+      directors: s.directors,
+      studios: s.studios,
+      yearFrom: s.yearFrom,
+      yearTo: s.yearTo,
+      cups: s.cups,
+      ratingFrom: s.ratingFrom,
+      playedMin: s.playedMin,
+      playedMax: s.playedMax,
+      favoriteOnly: s.favoriteOnly,
+      sortBy: s.sortBy,
+      sortOrder: s.sortOrder,
+    })
+  )
 
   const {
     data,
@@ -72,7 +74,7 @@ export function MovieGrid() {
     isLoading,
     isError,
   } = useInfiniteQuery({
-    queryKey: ["movies", "grid", filters],
+    queryKey: ["movies", "grid", filterKey],
     queryFn: ({ pageParam }) => fetchMovies(pageParam, PAGE_SIZE),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
