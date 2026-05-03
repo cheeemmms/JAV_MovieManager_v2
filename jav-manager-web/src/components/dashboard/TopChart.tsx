@@ -6,24 +6,27 @@ interface TopChartProps {
   stats: StatsResponse
 }
 
-type Tab = "actors" | "genres" | "studios"
+type Tab = "movies" | "actors" | "genres" | "studios"
 
 export function TopChart({ stats }: TopChartProps) {
   const [tab, setTab] = useState<Tab>("actors")
 
   const dataMap: Record<Tab, { name: string; count: number }[]> = {
+    movies: stats.topMovies,
     actors: stats.topActors,
     genres: stats.topGenres,
     studios: stats.topStudios,
   }
 
   const tabLabels: Record<Tab, string> = {
+    movies: "Top Movies",
     actors: "Top Actors",
     genres: "Top Genres",
     studios: "Top Studios",
   }
 
   const barColor: Record<Tab, string> = {
+    movies: "#f472b6",
     actors: "#60a5fa",
     genres: "#34d399",
     studios: "#a78bfa",

@@ -35,6 +35,22 @@ public class ImageController : ControllerBase
         return ServeImage(movie.FanArtLocation);
     }
 
+    [HttpGet("actor/{name}")]
+    public async Task<IActionResult> GetActorPhoto(string name)
+    {
+        var setting = await _context.UserSettings
+            .FirstOrDefaultAsync(s => s.Key == "ActorPhotoDirectory");
+        if (setting == null || string.IsNullOrEmpty(setting.Value))
+            return NoContent();
+
+        var filePath = Path.Combine(setting.Value, $"{name}.jpg");
+        if (!System.IO.File.Exists(filePath))
+        {
+            filePath = Path.Combine(setting.Value, $"{name}.png");
+        }
+        return ServeImage(filePath);
+    }
+
     private IActionResult ServeImage(string filePath)
     {
         if (!System.IO.File.Exists(filePath))

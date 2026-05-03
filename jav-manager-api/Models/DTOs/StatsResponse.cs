@@ -8,6 +8,7 @@ public class StatsResponse
     public long TotalPlayTime { get; set; }
     public int TotalPlays { get; set; }
     public double AverageRating { get; set; }
+    public List<TopItem> TopMovies { get; set; } = new();
     public List<TopItem> TopActors { get; set; } = new();
     public List<TopItem> TopGenres { get; set; } = new();
     public List<TopItem> TopStudios { get; set; } = new();

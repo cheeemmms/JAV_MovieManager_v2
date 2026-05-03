@@ -61,11 +61,11 @@ export function DPlayerWrapper({
     dp.on("ended", handleEnded)
 
     return () => {
-      dp.off("timeupdate", handleTimeUpdate)
-      dp.off("play", handlePlay)
-      dp.off("pause", handlePause)
-      dp.off("ended", handleEnded)
-      dp.destroy()
+      try {
+        dp.destroy()
+      } catch {
+        // destroy 内部可能因 DPlayer 状态不一致而抛出，忽略即可
+      }
       dpRef.current = null
     }
   }, [videoUrl, posterUrl, autoplay])

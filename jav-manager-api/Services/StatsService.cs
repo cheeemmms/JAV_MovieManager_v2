@@ -29,7 +29,14 @@ public class StatsService
                 averageRating = await ratedMovies.AverageAsync(m => m.Rating);
         }
 
-        var topActors = await _context.MovieActors
+        var topMovies = await _context.Movies
+            .Where(m => m.PlayedCount > 0)
+            .OrderByDescending(m => m.PlayedCount)
+            .Take(10)
+            .Select(m => new TopItem { Name = m.Title, Count = m.PlayedCount })
+            .ToListAsync();
+
+        var topActors = await _context.MovieActors.Include(ma => ma.Actor)
             .GroupBy(ma => ma.Actor.Name)
             .Select(g => new TopItem { Name = g.Key, Count = g.Count() })
             .OrderByDescending(t => t.Count)
@@ -77,6 +84,7 @@ public class StatsService
             TotalPlayTime = totalPlayTime,
             TotalPlays = totalPlays,
             AverageRating = Math.Round(averageRating, 1),
+            TopMovies = topMovies,
             TopActors = topActors,
             TopGenres = topGenres,
             TopStudios = topStudios,

@@ -1,14 +1,23 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { Search, Users } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useActors } from "@/services/actorService"
+import { useFilterStore } from "@/stores/filterStore"
+import { API_BASE } from "@/lib/constants"
 
 export function ActorGrid() {
   const [search, setSearch] = useState("")
+  const navigate = useNavigate()
   const { data: actors, isLoading, isError } = useActors(search)
 
+  const handleActorClick = (name: string) => {
+    useFilterStore.getState().setFilter("actors", [name])
+    navigate("/")
+  }
+
   return (
-    <div className="container py-8">
+    <div className="max-w-[1400px] mx-auto px-6 py-8">
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold">Actors</h1>
         <div className="relative w-64">
@@ -54,10 +63,21 @@ export function ActorGrid() {
           {actors.map((actor) => (
             <div
               key={actor.name}
-              className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm hover:shadow-md transition-shadow"
+              className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => handleActorClick(actor.name)}
             >
-              <p className="font-semibold truncate">{actor.name}</p>
-              <div className="mt-2 flex flex-wrap gap-1.5 text-xs text-muted-foreground">
+              <div className="flex items-center gap-3">
+                <img
+                  src={`${API_BASE}/images/actor/${encodeURIComponent(actor.name)}`}
+                  alt={actor.name}
+                  className="h-12 w-12 rounded-full object-cover bg-muted shrink-0"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none"
+                  }}
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold truncate">{actor.name}</p>
+                  <div className="mt-1 flex flex-wrap gap-1.5 text-xs text-muted-foreground">
                 {actor.movieCount > 0 && (
                   <span className="rounded bg-muted px-1.5 py-0.5">
                     {actor.movieCount} movies
@@ -81,6 +101,8 @@ export function ActorGrid() {
                   </span>
                 </div>
               )}
+                </div>
+              </div>
             </div>
           ))}
         </div>

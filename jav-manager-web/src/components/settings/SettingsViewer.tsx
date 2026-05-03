@@ -12,6 +12,7 @@ import { useSettings, useSaveSettings, useTriggerScan } from "@/services/setting
 
 const settingsSchema = z.object({
   movieDirectory: z.string().min(1, "Movie directory is required"),
+  actorPhotoDirectory: z.string().optional(),
   dateRange: z.number().min(-1),
   scrapeActorInfo: z.boolean(),
   forceUpdate: z.boolean(),
@@ -38,6 +39,7 @@ export function SettingsViewer() {
     resolver: zodResolver(settingsSchema),
     defaultValues: {
       movieDirectory: "",
+      actorPhotoDirectory: "",
       dateRange: -1,
       scrapeActorInfo: false,
       forceUpdate: false,
@@ -61,6 +63,7 @@ export function SettingsViewer() {
       hasInitRef.current = true
       reset({
         movieDirectory: settings.MovieDirectory || "",
+        actorPhotoDirectory: settings.ActorPhotoDirectory || "",
         dateRange: Number(settings.ScanDateRange) || -1,
         scrapeActorInfo: settings.ScanScrapeActorInfo === "true",
         forceUpdate: settings.ScanForceUpdate === "true",
@@ -72,6 +75,7 @@ export function SettingsViewer() {
     try {
       await saveMutation.mutateAsync({
         MovieDirectory: data.movieDirectory,
+        ActorPhotoDirectory: data.actorPhotoDirectory || "",
         ScanDateRange: String(data.dateRange),
         ScanScrapeActorInfo: String(data.scrapeActorInfo),
         ScanForceUpdate: String(data.forceUpdate),
@@ -99,7 +103,7 @@ export function SettingsViewer() {
 
   if (isLoading && !loadingTimedOut) {
     return (
-      <div className="container py-8">
+      <div className="max-w-[1400px] mx-auto px-6 py-8">
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
@@ -109,7 +113,7 @@ export function SettingsViewer() {
 
   if (isLoading && loadingTimedOut) {
     return (
-      <div className="container py-8">
+      <div className="max-w-[1400px] mx-auto px-6 py-8">
         <div className="flex flex-col items-center justify-center py-20 gap-4">
           <AlertTriangle className="h-8 w-8 text-amber-500" />
           <p className="text-muted-foreground">Loading is taking longer than expected</p>
@@ -124,7 +128,7 @@ export function SettingsViewer() {
 
   if (isError) {
     return (
-      <div className="container py-8">
+      <div className="max-w-[1400px] mx-auto px-6 py-8">
         <div className="flex flex-col items-center justify-center py-20 gap-4">
           <AlertTriangle className="h-8 w-8 text-destructive" />
           <p className="text-muted-foreground">
@@ -140,7 +144,7 @@ export function SettingsViewer() {
   }
 
   return (
-    <div className="container py-8 max-w-2xl">
+    <div className="max-w-[1400px] mx-auto px-6 py-8">
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold">Settings</h1>
@@ -172,6 +176,23 @@ export function SettingsViewer() {
               )}
               <p className="text-xs text-muted-foreground">
                 The root directory containing your movie folders with .nfo metadata files
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="actorPhotoDirectory" className="text-sm font-medium">
+                Actor Photo Directory
+              </label>
+              <div className="flex gap-2">
+                <Input
+                  id="actorPhotoDirectory"
+                  placeholder="e.g. D:\Photos\Actors"
+                  className="flex-1"
+                  {...register("actorPhotoDirectory")}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Directory containing actor photos named as ActorName.jpg
               </p>
             </div>
           </div>

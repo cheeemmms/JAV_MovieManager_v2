@@ -21,6 +21,7 @@ export interface StatsResponse {
   totalPlayTime: number
   totalPlays: number
   averageRating: number
+  topMovies: TopItem[]
   topActors: TopItem[]
   topGenres: TopItem[]
   topStudios: TopItem[]

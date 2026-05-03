@@ -9,7 +9,7 @@ export function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="container py-8">
+      <div className="max-w-[1400px] mx-auto px-6 py-8">
         <h1 className="mb-6 text-2xl font-bold">Dashboard</h1>
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -29,7 +29,7 @@ export function Dashboard() {
 
   if (isError || !stats) {
     return (
-      <div className="container py-8">
+      <div className="max-w-[1400px] mx-auto px-6 py-8">
         <h1 className="mb-6 text-2xl font-bold">Dashboard</h1>
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <p className="text-lg font-medium text-destructive">Failed to load statistics</p>
@@ -42,7 +42,7 @@ export function Dashboard() {
   }
 
   return (
-    <div className="container py-8">
+    <div className="max-w-[1400px] mx-auto px-6 py-8">
       <h1 className="mb-6 text-2xl font-bold">Dashboard</h1>
       <div className="space-y-6">
         <StatCards stats={stats} />

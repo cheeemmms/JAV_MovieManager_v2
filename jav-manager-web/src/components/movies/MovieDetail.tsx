@@ -6,6 +6,7 @@ import { BlurhashImage } from "./BlurhashImage"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { useMovie, useToggleFavorite } from "@/services/movieService"
+import { useFilterStore } from "@/stores/filterStore"
 import { API_BASE } from "@/lib/constants"
 
 export function MovieDetail() {
@@ -43,6 +44,11 @@ export function MovieDetail() {
         },
       })
     }
+  }
+
+  const handleFilterClick = (key: string, value: string) => {
+    useFilterStore.getState().setFilter(key, [value])
+    navigate("/")
   }
 
   if (isLoading) {
@@ -85,7 +91,7 @@ export function MovieDetail() {
         )}
 
         <div className="relative">
-          <div className="container py-6">
+          <div className="max-w-[1400px] mx-auto px-6 py-6">
             <button
               onClick={handleBack}
               className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
@@ -198,7 +204,12 @@ export function MovieDetail() {
                       <User className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
                       <div>
                         <span className="text-muted-foreground">Director</span>
-                        <p className="font-medium">{movie.director}</p>
+                        <p
+                          className="font-medium cursor-pointer hover:text-primary transition-colors"
+                          onClick={() => handleFilterClick("directors", movie.director!)}
+                        >
+                          {movie.director}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -207,7 +218,12 @@ export function MovieDetail() {
                       <Building2 className="h-4 w-4 mt-0.5 text-muted-foreground shrink-0" />
                       <div>
                         <span className="text-muted-foreground">Studio</span>
-                        <p className="font-medium">{movie.studio}</p>
+                        <p
+                          className="font-medium cursor-pointer hover:text-primary transition-colors"
+                          onClick={() => handleFilterClick("studios", movie.studio!)}
+                        >
+                          {movie.studio}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -253,7 +269,8 @@ export function MovieDetail() {
                           {movie.actors.map((actor) => (
                             <span
                               key={actor}
-                              className="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-medium"
+                              className="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-medium cursor-pointer hover:ring-2 hover:ring-primary transition-shadow"
+                              onClick={() => handleFilterClick("actors", actor)}
                             >
                               {actor}
                             </span>
@@ -273,7 +290,8 @@ export function MovieDetail() {
                             {movie.genres.map((genre) => (
                               <span
                                 key={genre}
-                                className="inline-flex items-center rounded-md bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"
+                                className="inline-flex items-center rounded-md bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary cursor-pointer hover:ring-2 hover:ring-primary transition-shadow"
+                                onClick={() => handleFilterClick("genres", genre)}
                               >
                                 {genre}
                               </span>
@@ -292,7 +310,8 @@ export function MovieDetail() {
                             {movie.tags.map((tag) => (
                               <span
                                 key={tag}
-                                className="inline-flex items-center rounded-md bg-secondary px-2.5 py-0.5 text-xs font-medium"
+                                className="inline-flex items-center rounded-md bg-secondary px-2.5 py-0.5 text-xs font-medium cursor-pointer hover:ring-2 hover:ring-primary transition-shadow"
+                                onClick={() => handleFilterClick("tags", tag)}
                               >
                                 {tag}
                               </span>
