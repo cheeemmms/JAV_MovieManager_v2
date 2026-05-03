@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, Heart, AlertTriangle } from "lucide-react"
+import { toast } from "sonner"
 import { DPlayerWrapper } from "./DPlayerWrapper"
 import { useMovie, useToggleFavorite } from "@/services/movieService"
 import { usePlayerStore } from "@/stores/playerStore"
@@ -16,7 +17,7 @@ export function VideoPlayer() {
   const toggleFavorite = useToggleFavorite()
   const { setCurrent, setPlaying, setProgress } = usePlayerStore()
   const [dp, setDp] = useState<DPlayer | null>(null)
-  const [showResumePrompt, setShowResumePrompt] = useState(false)
+  const [dismissedFor, setDismissedFor] = useState<string | null>(null)
   const [hevcWarning, setHevcWarning] = useState(false)
   const progressRef = useRef(0)
   const hasCheckedHevcRef = useRef(false)
@@ -37,11 +38,7 @@ export function VideoPlayer() {
     }
   }, [imdbId, setCurrent, setPlaying, setProgress])
 
-  useEffect(() => {
-    if (movie && movie.progress > 0 && movie.progress < 95) {
-      setShowResumePrompt(true)
-    }
-  }, [movie])
+  const showResumePrompt = dismissedFor !== imdbId && movie != null && movie.progress > 0 && movie.progress < 95
 
   const checkHEVCSupport = useCallback(() => {
     if (hasCheckedHevcRef.current) return
@@ -64,12 +61,12 @@ export function VideoPlayer() {
       dp.seek(seekTime)
       dp.play()
     }
-    setShowResumePrompt(false)
-  }, [dp, movie])
+    setDismissedFor(imdbId ?? null)
+  }, [dp, movie, imdbId])
 
   const handleStartFromBeginning = useCallback(() => {
-    setShowResumePrompt(false)
-  }, [])
+    setDismissedFor(imdbId ?? null)
+  }, [imdbId])
 
   const handleTimeUpdate = useCallback((currentTime: number, duration: number) => {
     const pct = duration > 0 ? (currentTime / duration) * 100 : 0
@@ -92,7 +89,18 @@ export function VideoPlayer() {
   }, [navigate, endRecording])
 
   const handleToggleFavorite = useCallback(() => {
-    if (imdbId) toggleFavorite.mutate(imdbId)
+    if (imdbId) {
+      toggleFavorite.mutate(imdbId, {
+        onSuccess: (data) => {
+          toast.success(
+            data.favorite ? "Added to favorites" : "Removed from favorites"
+          )
+        },
+        onError: () => {
+          toast.error("Failed to update favorites")
+        },
+      })
+    }
   }, [imdbId, toggleFavorite])
 
   useEffect(() => {

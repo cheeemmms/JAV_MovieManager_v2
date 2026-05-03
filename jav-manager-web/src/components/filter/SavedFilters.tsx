@@ -47,6 +47,7 @@ export function SavedFilters({ className }: SavedFiltersProps) {
   const handleSave = () => {
     if (!saveName.trim()) return
     const currentFilters = buildApiRequest(1, 30)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { page, pageSize, ...filterData } = currentFilters
     const updated = [
       ...savedFilters.filter((f) => f.name !== saveName.trim()),

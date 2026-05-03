@@ -2,7 +2,7 @@
 
 > 目标项目：`D:\Personal_file\VibeCoding\Program\JAV_MovieManager_v2`
 > 旧项目参考：`D:\Personal_file\VibeCoding\clone\JAV_MovieManager`
-> 当前阶段：**阶段 A 已完成（产品设计），即将进入阶段 B（MVP 开发）**
+> 当前阶段：**阶段 B MVP 开发中，M0-M5 已完成，M6 待开始**
 
 ---
 
@@ -10,7 +10,7 @@
 
 ```
 阶段 A: 产品设计    ✅ 已完成
-阶段 B: MVP 开发    🔲 待开始（M0 → M6）
+阶段 B: MVP 开发    🔄 进行中（M0-M5 已完成，M6 待开始）
 阶段 C: 增强功能    🔲 后续
 ```
 

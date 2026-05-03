@@ -160,3 +160,5 @@ jav-manager-tray (WPF) → 启动 jav-manager-api (Kestrel) → 打开浏览器
 |---|---|---|
 | 2026-05-02 | 初始创建，汇总所有设计决策 | 用户 |
 | 2026-05-02 | 拆分为 5 个文档（design-document + tech-stack + architecture + implementation-plan + progress） | 用户 |
+| 2026-05-03 | M5 辅助功能完成：SettingsViewer / MovieDetail / sonner 通知 | AI |
+| 2026-05-03 | 全项目 lint 清零：tsc 0 错误 + eslint 0 错误 0 警告 | AI |

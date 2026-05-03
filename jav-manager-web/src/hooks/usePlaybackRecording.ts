@@ -8,7 +8,10 @@ export function usePlaybackRecording(movieId: string) {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const startTimeRef = useRef<number>(0)
   const movieIdRef = useRef(movieId)
-  movieIdRef.current = movieId
+
+  useEffect(() => {
+    movieIdRef.current = movieId
+  }, [movieId])
 
   const saveProgress = useCallback(async (percentage: number) => {
     if (!historyIdRef.current) return

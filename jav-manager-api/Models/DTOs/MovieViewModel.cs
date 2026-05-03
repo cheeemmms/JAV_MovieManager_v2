@@ -4,12 +4,15 @@ public class MovieViewModel
 {
     public string ImdbId { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
+    public string Plot { get; set; } = string.Empty;
     public string Director { get; set; } = string.Empty;
     public string Studio { get; set; } = string.Empty;
     public string PosterFileLocation { get; set; } = string.Empty;
     public string FanArtLocation { get; set; } = string.Empty;
     public string MovieLocation { get; set; } = string.Empty;
     public string DateAdded { get; set; } = string.Empty;
+    public string ReleaseDate { get; set; } = string.Empty;
+    public string? LastPlayedAt { get; set; }
     public int Year { get; set; }
     public int Runtime { get; set; }
     public int PlayedCount { get; set; }

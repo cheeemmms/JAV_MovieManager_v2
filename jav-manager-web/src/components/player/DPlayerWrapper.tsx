@@ -25,7 +25,10 @@ export function DPlayerWrapper({
   const containerRef = useRef<HTMLDivElement>(null)
   const dpRef = useRef<DPlayer | null>(null)
   const callbacksRef = useRef({ onTimeUpdate, onPlay, onPause, onEnded, onReady })
-  callbacksRef.current = { onTimeUpdate, onPlay, onPause, onEnded, onReady }
+
+  useEffect(() => {
+    callbacksRef.current = { onTimeUpdate, onPlay, onPause, onEnded, onReady }
+  })
 
   useEffect(() => {
     if (!containerRef.current) return

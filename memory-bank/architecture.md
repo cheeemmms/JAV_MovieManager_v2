@@ -136,10 +136,11 @@ JAV_MovieManager_v2/
 │   │   │   │   ├── TrendChart.tsx      # 时间趋势（Recharts）
 │   │   │   │   └── Heatmap.tsx         # 月度热力图
 │   │   │   └── settings/
-│   │   │       └── SettingsViewer.tsx   # 设置页面
+│   │   │       └── SettingsViewer.tsx   # 设置页面（RHF + Zod + 扫描触发）
 │   │   ├── hooks/
 │   │   │   ├── useDebounce.ts          # 搜索防抖
-│   │   │   └── useMediaQuery.ts        # 响应式
+│   │   │   ├── useMediaQuery.ts        # 响应式
+│   │   │   └── usePlaybackRecording.ts # 播放历史记录
 │   │   ├── services/
 │   │   │   ├── api.ts                  # API 基础配置（baseURL等）
 │   │   │   ├── movieService.ts         # 影片 API hooks

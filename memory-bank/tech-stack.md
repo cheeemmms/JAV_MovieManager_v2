@@ -154,3 +154,4 @@ npx shadcn@latest init
 | 日期 | 变更 | 决策人 |
 |---|---|---|
 | 2026-05-02 | 初始创建，从 design-document.md 独立 | 用户 |
+| 2026-05-03 | M5 完成：React Hook Form + Zod 用于设置表单，sonner 用于全局通知 | AI |
