@@ -4,6 +4,7 @@ import DPlayer from "dplayer"
 interface DPlayerWrapperProps {
   videoUrl: string
   posterUrl?: string
+  subtitleUrl?: string
   autoplay?: boolean
   onTimeUpdate?: (currentTime: number, duration: number) => void
   onPlay?: () => void
@@ -15,6 +16,7 @@ interface DPlayerWrapperProps {
 export function DPlayerWrapper({
   videoUrl,
   posterUrl,
+  subtitleUrl,
   autoplay = true,
   onTimeUpdate,
   onPlay,
@@ -33,7 +35,7 @@ export function DPlayerWrapper({
   useEffect(() => {
     if (!containerRef.current) return
 
-    const dp = new DPlayer({
+    const options: DPlayer.DPlayerOptions = {
       container: containerRef.current,
       autoplay,
       video: {
@@ -43,7 +45,16 @@ export function DPlayerWrapper({
       danmaku: false,
       contextmenu: [],
       hotkey: true,
-    })
+    }
+
+    if (subtitleUrl) {
+      options.subtitle = {
+        url: subtitleUrl,
+        type: "webvtt",
+      }
+    }
+
+    const dp = new DPlayer(options)
 
     dpRef.current = dp
     callbacksRef.current.onReady?.(dp)
@@ -68,7 +79,7 @@ export function DPlayerWrapper({
       }
       dpRef.current = null
     }
-  }, [videoUrl, posterUrl, autoplay])
+  }, [videoUrl, posterUrl, subtitleUrl, autoplay])
 
   return (
     <div

@@ -14,6 +14,11 @@ export interface HeatmapItem {
   count: number
 }
 
+export interface DailyPlayItem {
+  date: string
+  count: number
+}
+
 export interface StatsResponse {
   totalMovies: number
   totalActors: number
@@ -27,4 +32,5 @@ export interface StatsResponse {
   topStudios: TopItem[]
   trend: TrendItem[]
   heatmap: HeatmapItem[]
+  dailyPlays: DailyPlayItem[]
 }

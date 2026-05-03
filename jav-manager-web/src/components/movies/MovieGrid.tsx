@@ -1,12 +1,14 @@
-import { useCallback, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { VirtuosoGrid, type VirtuosoGridHandle } from "react-virtuoso"
 import { useInfiniteQuery } from "@tanstack/react-query"
+import { useNavigationType } from "react-router-dom"
 import { MovieCard } from "./MovieCard"
 import { useFilterStore } from "@/stores/filterStore"
 import { API_BASE } from "@/lib/constants"
 import type { FilterResponse } from "@/types/filter"
 
 const PAGE_SIZE = 30
+const SCROLL_STORAGE_KEY = "jav-manager-grid-scroll"
 
 async function fetchMovies(
   page: number,
@@ -23,9 +25,39 @@ async function fetchMovies(
   return res.json()
 }
 
+function saveScrollPosition(index: number) {
+  try {
+    sessionStorage.setItem(SCROLL_STORAGE_KEY, String(index))
+  } catch {
+    // ignore
+  }
+}
+
+function loadScrollPosition(): number | null {
+  try {
+    const raw = sessionStorage.getItem(SCROLL_STORAGE_KEY)
+    if (raw === null) return null
+    const index = Number(raw)
+    return Number.isFinite(index) && index >= 0 ? index : null
+  } catch {
+    return null
+  }
+}
+
+function clearScrollPosition() {
+  try {
+    sessionStorage.removeItem(SCROLL_STORAGE_KEY)
+  } catch {
+    // ignore
+  }
+}
+
 export function MovieGrid() {
   const gridRef = useRef<VirtuosoGridHandle>(null)
+  const scrollRowIndexRef = useRef(0)
   const [containerWidth, setContainerWidth] = useState(0)
+  const navigationType = useNavigationType()
+
   const containerRef = useCallback((node: HTMLDivElement | null) => {
     if (node) {
       setContainerWidth(node.clientWidth)
@@ -97,6 +129,34 @@ export function MovieGrid() {
     return result
   }, [movies, itemsPerRow])
 
+  const initialTopMostItemIndex = useMemo(() => {
+    if (navigationType === "PUSH") {
+      clearScrollPosition()
+    }
+    return 0
+  }, [navigationType])
+
+  useEffect(() => {
+    if (navigationType === "POP" && rows.length > 0) {
+      const saved = loadScrollPosition()
+      if (saved && saved > 0) {
+        const timer = setTimeout(() => {
+          gridRef.current?.scrollToIndex(saved)
+          clearScrollPosition()
+        }, 300)
+        return () => clearTimeout(timer)
+      }
+    }
+  }, [navigationType, rows.length])
+
+  useEffect(() => {
+    return () => {
+      if (scrollRowIndexRef.current > 0) {
+        saveScrollPosition(scrollRowIndexRef.current)
+      }
+    }
+  }, [])
+
   if (isLoading) {
     return (
       <div className="container py-8">
@@ -142,23 +202,33 @@ export function MovieGrid() {
         style={{ height: "calc(100vh - 4rem)" }}
         totalCount={rows.length}
         data={rows}
+        initialTopMostItemIndex={initialTopMostItemIndex}
         endReached={() => {
           if (hasNextPage && !isFetchingNextPage) {
             fetchNextPage()
           }
         }}
-        itemContent={(_, row) => (
-          <div
-            className="grid gap-4 pb-4"
-            style={{
-              gridTemplateColumns: `repeat(${itemsPerRow}, minmax(0, 1fr))`,
-            }}
-          >
-            {row.map((movie, i) => (
-              <MovieCard key={movie.imdbId} movie={movie} index={i} />
-            ))}
-          </div>
-        )}
+        itemContent={(_, row) => {
+          const firstMovie = row[0]
+          const movieIndex = movies.indexOf(firstMovie)
+          const rowIndex = Math.floor(movieIndex / itemsPerRow)
+          if (!isNaN(rowIndex) && rowIndex > scrollRowIndexRef.current) {
+            scrollRowIndexRef.current = rowIndex
+          }
+
+          return (
+            <div
+              className="grid gap-4 pb-4"
+              style={{
+                gridTemplateColumns: `repeat(${itemsPerRow}, minmax(0, 1fr))`,
+              }}
+            >
+              {row.map((movie, i) => (
+                <MovieCard key={movie.imdbId} movie={movie} index={i} />
+              ))}
+            </div>
+          )
+        }}
         components={{
           Footer: () =>
             isFetchingNextPage ? (

@@ -34,4 +34,21 @@ public class StreamController : ControllerBase
         if (info == null) return NotFound();
         return Ok(info);
     }
+
+    [HttpGet("{imdbId}/subtitle")]
+    public IActionResult GetSubtitle(string imdbId)
+    {
+        var subtitle = _streamService.GetSubtitleContent(imdbId);
+        if (subtitle == null) return NoContent();
+
+        var contentType = subtitle.Value.Extension switch
+        {
+            ".vtt" => "text/vtt; charset=utf-8",
+            ".srt" => "text/plain; charset=utf-8",
+            ".ass" => "text/plain; charset=utf-8",
+            _ => "text/plain; charset=utf-8",
+        };
+
+        return File(subtitle.Value.Content, contentType);
+    }
 }

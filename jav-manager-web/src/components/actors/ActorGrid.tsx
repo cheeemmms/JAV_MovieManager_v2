@@ -13,6 +13,7 @@ export function ActorGrid() {
 
   const handleActorClick = (name: string) => {
     useFilterStore.getState().setFilter("actors", [name])
+    window.scrollTo(0, 0)
     navigate("/")
   }
 
@@ -68,7 +69,7 @@ export function ActorGrid() {
             >
               <div className="flex items-center gap-3">
                 <img
-                  src={`${API_BASE}/images/actor/${encodeURIComponent(actor.name)}`}
+                  src={`${API_BASE}/image/actor/${encodeURIComponent(actor.name)}`}
                   alt={actor.name}
                   className="h-12 w-12 rounded-full object-cover bg-muted shrink-0"
                   onError={(e) => {

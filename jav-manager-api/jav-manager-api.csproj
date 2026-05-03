@@ -19,6 +19,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.*" />
     <PackageReference Include="Serilog.AspNetCore" Version="9.0.*" />
     <PackageReference Include="Serilog.Sinks.File" Version="6.0.*" />
+    <PackageReference Include="Ude.NetStandard" Version="1.2.0" />
   </ItemGroup>
 
 </Project>

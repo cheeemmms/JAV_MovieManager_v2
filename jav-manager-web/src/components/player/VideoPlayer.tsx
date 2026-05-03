@@ -1,13 +1,16 @@
 import { useState, useCallback, useRef, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
+import { useQuery } from "@tanstack/react-query"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, Heart, AlertTriangle } from "lucide-react"
 import { toast } from "sonner"
 import { DPlayerWrapper } from "./DPlayerWrapper"
+import { MovieCard } from "@/components/movies/MovieCard"
 import { useMovie, useToggleFavorite } from "@/services/movieService"
 import { usePlayerStore } from "@/stores/playerStore"
 import { API_BASE } from "@/lib/constants"
 import { usePlaybackRecording } from "@/hooks/usePlaybackRecording"
+import type { MovieViewModel } from "@/types/movie"
 import type DPlayer from "dplayer"
 
 export function VideoPlayer() {
@@ -22,7 +25,50 @@ export function VideoPlayer() {
   const progressRef = useRef(0)
   const hasCheckedHevcRef = useRef(false)
 
+  const primaryActor = movie?.actors?.[0] ?? null
+
+  const { data: sameActorMovies } = useQuery({
+    queryKey: ["movies", "sameActor", primaryActor, imdbId],
+    queryFn: async () => {
+      if (!primaryActor) return []
+      const res = await fetch(`${API_BASE}/movies/filter`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          searchTerm: "",
+          actors: [primaryActor],
+          genres: [],
+          tags: [],
+          directors: [],
+          studios: [],
+          yearFrom: null,
+          yearTo: null,
+          heightFrom: null,
+          heightTo: null,
+          cups: [],
+          ageFrom: null,
+          ageTo: null,
+          ratingFrom: null,
+          playedMin: null,
+          playedMax: null,
+          favoriteOnly: false,
+          isAndOperator: false,
+          sortBy: "dateAdded",
+          sortOrder: "desc",
+          page: 1,
+          pageSize: 50,
+        }),
+      })
+      if (!res.ok) return []
+      const data = await res.json()
+      return (data.items as MovieViewModel[]).filter((m) => m.imdbId !== imdbId)
+    },
+    enabled: !!primaryActor && !!imdbId,
+    staleTime: 60_000,
+  })
+
   const streamUrl = `${API_BASE}/stream/${imdbId}`
+  const subtitleUrl = `${API_BASE}/stream/${imdbId}/subtitle`
   const posterUrl = movie?.posterFileLocation
     ? `${API_BASE}/image/poster/${imdbId}`
     : ""
@@ -180,6 +226,7 @@ export function VideoPlayer() {
         <DPlayerWrapper
           videoUrl={streamUrl}
           posterUrl={posterUrl}
+          subtitleUrl={subtitleUrl}
           autoplay={!showResumePrompt}
           onReady={handleReady}
           onTimeUpdate={handleTimeUpdate}
@@ -278,6 +325,21 @@ export function VideoPlayer() {
           </button>
         </div>
       </div>
+
+      {sameActorMovies && sameActorMovies.length > 0 && (
+        <div className="shrink-0 bg-black px-4 pb-4">
+          <p className="mb-2 text-sm font-semibold text-white/70">
+            More from {primaryActor}
+          </p>
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {sameActorMovies.slice(0, 20).map((m) => (
+              <div key={m.imdbId} className="shrink-0 w-[140px]">
+                <MovieCard movie={m} />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </motion.div>
   )
 }

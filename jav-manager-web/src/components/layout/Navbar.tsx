@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom"
-import { Search, SlidersHorizontal, Sun, Moon, Monitor } from "lucide-react"
+import { Link, useNavigate } from "react-router-dom"
+import { Search, SlidersHorizontal, Sun, Moon, Monitor, Shuffle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useThemeStore, type Theme } from "@/stores/themeStore"
 import { useFilterStore } from "@/stores/filterStore"
+import { useShuffleStore } from "@/stores/shuffleStore"
 import { useLayout } from "./AppLayout"
 
 const themeIcons: Record<Theme, typeof Sun> = {
@@ -26,7 +27,20 @@ const themeLabels: Record<Theme, string> = {
 export function Navbar() {
   const { openFilter, openSearch } = useLayout()
   const { theme, setTheme } = useThemeStore()
+  const navigate = useNavigate()
   const ThemeIcon = themeIcons[theme]
+
+  const handleShuffle = async () => {
+    const { init, next, loading } = useShuffleStore.getState()
+    if (loading) return
+    if (useShuffleStore.getState().ids.length === 0) {
+      await init()
+    }
+    const id = next()
+    if (id) {
+      navigate(`/movie/${id}`)
+    }
+  }
 
   return (
     <nav className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -63,6 +77,9 @@ export function Navbar() {
             <Search className="h-4 w-4" />
             <span>Search movies...</span>
             <kbd className="ml-auto rounded border bg-muted px-1.5 text-xs">/</kbd>
+          </Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8" title="Shuffle" onClick={handleShuffle}>
+            <Shuffle className="h-4 w-4" />
           </Button>
           <Button variant="ghost" size="icon" className="h-8 w-8" title="Filters" onClick={openFilter}>
             <SlidersHorizontal className="h-4 w-4" />

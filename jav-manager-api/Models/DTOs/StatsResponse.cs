@@ -14,6 +14,7 @@ public class StatsResponse
     public List<TopItem> TopStudios { get; set; } = new();
     public List<TrendItem> Trend { get; set; } = new();
     public List<HeatmapItem> Heatmap { get; set; } = new();
+    public List<DailyPlayItem> DailyPlays { get; set; } = new();
 }
 
 public class TopItem
@@ -32,5 +33,11 @@ public class HeatmapItem
 {
     public string Month { get; set; } = string.Empty;
     public int Year { get; set; }
+    public int Count { get; set; }
+}
+
+public class DailyPlayItem
+{
+    public string Date { get; set; } = string.Empty;
     public int Count { get; set; }
 }

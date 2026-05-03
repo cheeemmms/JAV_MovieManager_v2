@@ -12,6 +12,8 @@
 |---|---|---|---|
 | 阶段 C：增强功能 | ✅ 已完成 | 2026-05-03 | 2026-05-03 |
 | 阶段 D：UX 增强 | ✅ 已完成 | 2026-05-03 | 2026-05-03 |
+| 阶段 E：修复与增强 | ✅ 已完成 | 2026-05-03 | 2026-05-03 |
+| 阶段 F：回归修复 + 新功能 | ✅ 已完成 | 2026-05-03 | 2026-05-03 |
 
 ---
 
@@ -53,7 +55,80 @@
 
 ---
 
-## 四、状态图例
+## 四、阶段 E：修复与增强
+
+| 顺序 | # | 项目 | 文件 | 状态 |
+|---|---|---|---|---|
+| 1 | E01 | Actor 头像 URL 修复（单复数匹配） | ActorGrid.tsx | ✅ |
+| 2 | E04 | 过度滚动修复（overscroll-behavior） | index.css | ✅ |
+| 3 | E05 | Actor 点击跳转后回到顶部 | ActorGrid.tsx | ✅ |
+| 4 | E02 | 随机播放按钮（Fisher-Yates 洗牌） | Navbar + shuffleStore | ✅ |
+| 5 | E03 | Heatmap GitHub 风格改版（按天聚合） | StatsService + Heatmap | ✅ |
+| 6 | E06 | 主页返回保持滚动位置 | MovieGrid.tsx | ✅ |
+
+**依頼**：E01/E04/E05 独立（P0，一行修复）；E02 独立（P1，新组件）；E03 需前后端联动（P1）；E06 最复杂（P2，需区分浏览器返回/导航点击）。
+
+### E01：Actor 头像 URL 修复
+
+前端 `/images/actor/` → `/image/actor/`（后端路由为 `ImageController` → `/api/image/actor/`）。
+
+### E02：随机播放按钮
+
+Navbar 右侧 + `ShuffleIcon`，Fisher-Yates 洗牌全部影片 ID → sessionStorage → 循环取下一个。
+
+### E03：Heatmap GitHub 风格
+
+后端 `StatsService` 新增按天聚合（365 天），前端 `Heatmap.tsx` 重写为 7 行 × N 列绿色方格网格。
+
+### E04：过度滚动修复
+
+`index.css` 添加 `html { overscroll-behavior-y: none; }`。
+
+### E05：Actor 点击跳转回顶部
+
+`handleActorClick` 中 `navigate` 前 `window.scrollTo(0, 0)`。
+
+### E06：主页返回保持滚动位置
+
+sessionStorage 保存 VirtuosoGrid 滚动位置。`history.action === "POP"` 恢复位置，`"PUSH"` 从顶部开始。
+
+---
+
+## 五、阶段 F：回归修复 + 新功能
+
+| 顺序 | # | 项目 | 文件 | 状态 |
+|---|---|---|---|---|
+| 1 | F01 | Settings 保存失败修复（连锁修复头像 204） | SettingsController.cs | ✅ |
+| 2 | F02 | 过度滚动强化修复 | index.css | ✅ |
+| 3 | F03 | 浏览器返回位置恢复修复 | MovieGrid.tsx | ✅ |
+| 4 | F04 | 播放页同女优推荐 | VideoPlayer.tsx | ✅ |
+| 5 | F05 | 播放器字幕支持 | StreamController + DPlayerWrapper | ✅ |
+
+**依頼**：F01 是根因（修复后 E01 自动解决）；F02/F03 独立；F04/F05 独立新功能。
+
+### F01：Settings 保存失败
+
+`SettingsController.cs` `[HttpPut]` 返回 `return Ok()` 导致前端 `res.json()` 解析失败。改为 `return Ok(new { success = true })`。
+
+### F02：过度滚动强化
+
+`html, body, #root { overscroll-behavior: none; }`。
+
+### F03：返回位置恢复
+
+`useEffect` + `gridRef.current?.scrollToIndex(saved)` + 300ms delay 等待数据就绪。
+
+### F04：同女优推荐
+
+VideoPlayer 中取第一个女优 → `POST /api/movies/filter` → MovieCard Grid 展示。
+
+### F05：字幕支持
+
+后端检测同目录 `.srt`/`.ass`/`.vtt` → Ude 自动检测编码 → UTF-8 返回。DPlayer `subtitle.url` 配置。
+
+---
+
+## 六、状态图例
 
 | 符号 | 含义 |
 |---|---|
@@ -73,3 +148,7 @@
 | 2026-05-03 | 阶段 D 全部完成：D01 Logo清除筛选 + D03 6列海报 + D04 fanart主图 + D05 筛选面板右推 + D02 激活tag条 |
 | 2026-05-03 | D06 修复 medium-zoom bug + 详情页布局重构（番号在上、海报阴影、Play加宽、Tags美化） |
 | 2026-05-03 | D07 详情页磁吸双区域（snap-scroll Hero + Fanart/Synopsis） |
+| 2026-05-03 | 阶段 E 规划完成：6 项任务（E01-E06）待开始 |
+| 2026-05-03 | 阶段 E 全部完成：6 项全部 ✅（tsc 0 / eslint 0 / dotnet build 0） |
+| 2026-05-03 | 阶段 F 规划完成：5 项任务（F01-F05）待开始 |
+| 2026-05-03 | 阶段 F 全部完成：5 项全部 ✅（tsc 0 / eslint 0 / dotnet build 0） |

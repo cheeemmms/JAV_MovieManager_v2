@@ -76,6 +76,14 @@ public class StatsService
             .OrderBy(h => h.Year).ThenBy(h => h.Month)
             .ToList();
 
+        var dailyPlays = (await _context.PlaybackHistories
+            .Where(ph => ph.StartedAt.CompareTo(oneYearAgo) >= 0)
+            .ToListAsync())
+            .GroupBy(ph => ph.StartedAt[..10])
+            .Select(g => new DailyPlayItem { Date = g.Key, Count = g.Count() })
+            .OrderBy(d => d.Date)
+            .ToList();
+
         return new StatsResponse
         {
             TotalMovies = totalMovies,
@@ -89,7 +97,8 @@ public class StatsService
             TopGenres = topGenres,
             TopStudios = topStudios,
             Trend = trend,
-            Heatmap = heatmap
+            Heatmap = heatmap,
+            DailyPlays = dailyPlays
         };
     }
 }

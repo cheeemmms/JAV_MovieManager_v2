@@ -47,6 +47,6 @@ public class SettingsController : ControllerBase
             }
         }
         await _context.SaveChangesAsync();
-        return Ok();
+        return Ok(new { success = true });
     }
 }

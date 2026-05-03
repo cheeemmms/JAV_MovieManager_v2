@@ -1,5 +1,6 @@
 using jav_manager_api.Data;
 using Microsoft.EntityFrameworkCore;
+using Ude;
 
 namespace jav_manager_api.Services;
 
@@ -43,6 +44,59 @@ public class StreamService
 
         var path = locations[0];
         return File.Exists(path) ? path : null;
+    }
+
+    public (byte[] Content, string Extension)? GetSubtitleContent(string imdbId)
+    {
+        var filePath = GetMovieFilePath(imdbId);
+        if (filePath == null) return null;
+
+        var directory = Path.GetDirectoryName(filePath);
+        if (directory == null) return null;
+
+        var movieFileName = Path.GetFileNameWithoutExtension(filePath);
+        var subtitleExtensions = new[] { ".vtt", ".srt", ".ass" };
+
+        foreach (var ext in subtitleExtensions)
+        {
+            var subtitlePath = Path.Combine(directory, movieFileName + ext);
+            if (File.Exists(subtitlePath))
+            {
+                var rawBytes = File.ReadAllBytes(subtitlePath);
+                var encoding = DetectEncoding(rawBytes);
+
+                if (encoding != null && encoding != System.Text.Encoding.UTF8)
+                {
+                    var utf8Bytes = System.Text.Encoding.Convert(encoding, System.Text.Encoding.UTF8, rawBytes);
+                    return (utf8Bytes, ext);
+                }
+
+                return (rawBytes, ext);
+            }
+        }
+
+        return null;
+    }
+
+    private static System.Text.Encoding? DetectEncoding(byte[] rawData)
+    {
+        var detector = new CharsetDetector();
+        detector.Feed(rawData, 0, rawData.Length);
+        detector.DataEnd();
+
+        if (detector.Charset != null)
+        {
+            try
+            {
+                return System.Text.Encoding.GetEncoding(detector.Charset);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        return null;
     }
 }
 
