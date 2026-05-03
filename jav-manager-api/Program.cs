@@ -25,7 +25,7 @@ builder.Services.AddScoped<StatsService>();
 builder.Services.AddScoped<StreamService>();
 
 var corsOrigins = builder.Configuration.GetSection("ApiSettings:CorsOrigins").Get<string[]>()
-    ?? new[] { "http://localhost:5173" };
+    ?? new[] { "http://localhost:5173", "http://localhost:5000" };
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>

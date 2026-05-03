@@ -1,9 +1,9 @@
-import { useEffect } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner"
-import { ScanLine, Save, Loader2 } from "lucide-react"
+import { ScanLine, Save, Loader2, AlertTriangle, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -20,9 +20,11 @@ const settingsSchema = z.object({
 type SettingsForm = z.infer<typeof settingsSchema>
 
 export function SettingsViewer() {
-  const { data: settings, isLoading } = useSettings()
+  const { data: settings, isLoading, isError, error, refetch } = useSettings()
   const saveMutation = useSaveSettings()
   const scanMutation = useTriggerScan()
+  const [loadingTimedOut, setLoadingTimedOut] = useState(false)
+  const loadingStartRef = useRef(Date.now())
 
   const {
     register,
@@ -40,6 +42,19 @@ export function SettingsViewer() {
       forceUpdate: false,
     },
   })
+
+  useEffect(() => {
+    if (isLoading) {
+      loadingStartRef.current = Date.now()
+      setLoadingTimedOut(false)
+    }
+  }, [isLoading])
+
+  useEffect(() => {
+    if (!isLoading) return
+    const timer = setTimeout(() => setLoadingTimedOut(true), 8000)
+    return () => clearTimeout(timer)
+  }, [isLoading])
 
   useEffect(() => {
     if (settings) {
@@ -81,11 +96,43 @@ export function SettingsViewer() {
     }
   }
 
-  if (isLoading) {
+  if (isLoading && !loadingTimedOut) {
     return (
       <div className="container py-8">
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      </div>
+    )
+  }
+
+  if (isLoading && loadingTimedOut) {
+    return (
+      <div className="container py-8">
+        <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <AlertTriangle className="h-8 w-8 text-amber-500" />
+          <p className="text-muted-foreground">Loading is taking longer than expected</p>
+          <Button variant="outline" onClick={() => { setLoadingTimedOut(false); refetch(); }}>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Retry
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="container py-8">
+        <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <AlertTriangle className="h-8 w-8 text-destructive" />
+          <p className="text-muted-foreground">
+            {error instanceof Error ? error.message : "Failed to load settings"}
+          </p>
+          <Button variant="outline" onClick={() => refetch()}>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Retry
+          </Button>
         </div>
       </div>
     )

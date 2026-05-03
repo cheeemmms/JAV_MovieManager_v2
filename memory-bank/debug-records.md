@@ -15,6 +15,8 @@
 | 3 | 2026-05-03 | 发布版 API 启动时 SQLite 无法创建数据库文件 | 🔴 阻塞 | ✅ 已解决 |
 | 4 | 2026-05-03 | 设置页面一直转圈加载（React 19 + RHF watch() 不兼容） | 🔴 阻塞 | ✅ 已解决 |
 | 5 | 2026-05-03 | 双击 TrayApp exe 无法启动（WPF PublishSingleFile DllNotFound） | 🔴 阻塞 | ✅ 已解决 |
+| 6 | 2026-05-03 | 项目端口不一致：launchSettings 5297 vs 其他配置 5000 | 🟡 警告 | ✅ 已解决 |
+| 7 | 2026-05-03 | TrayApp 启动 API 后所有请求挂起（stdout 缓冲区死锁） | 🔴 阻塞 | ✅ 已解决 |
 
 ---
 
@@ -196,6 +198,99 @@ import { Controller } from "react-hook-form"
 - ✅ API 自动启动在 `http://localhost:5000`
 - ✅ 浏览器自动打开
 - ✅ `http://localhost:5000/` → 200 OK
+
+---
+
+## Debug #6：项目端口不一致
+
+### 现象
+
+整个项目中多个文件引用不同的端口号（5297 和 5000），导致：
+- `dotnet run` 开发模式启动在 5297，但 Vite proxy 指向 5000 → 前端请求全部失败
+- `jav-manager-api.http` 测试文件指向过时的 5297
+- `CLAUDE.md` 文档描述与实际代码不一致
+- `Program.cs` CORS fallback 有语法错误
+
+### 根因分析
+
+- Debug #1 时将 API 端口统一为了 5000，但 `launchSettings.json` 和 `.http` 文件遗留了 5297
+- `Program.cs` CORS fallback 代码有重复的语法错误（多余的分号和字符串）
+
+### 修复内容
+
+| 文件 | 修改 |
+|---|---|
+| `launchSettings.json` | `5297` → `5000`（两个 profile 都已修改） |
+| `jav-manager-api.http` | `5297` → `5000` |
+| `Program.cs` | CORS fallback 从 `["http://localhost:5173"]` 改为 `["http://localhost:5173", "http://localhost:5000"]`，修复语法错误 |
+| `CLAUDE.md` | 开发命令和 Port Configuration 章节全部更新为 5000 |
+
+### 最终端口全景
+
+| 配置位置 | 端口 |
+|---|---|
+| `launchSettings.json` | 5000 |
+| `appsettings.json` ApiSettings.Urls | 5000 |
+| `Program.cs` 兜底 URL | 5000 |
+| `Program.cs` CORS fallback | 5173, 5000 |
+| `MainWindow.xaml.cs` DefaultPort | 5000 |
+| `vite.config.ts` proxy target | 5000 |
+| 前端 `API_BASE` | `/api`（相对路径） |
+| Vite dev server | 5173 |
+
+### 验证结果
+
+- ✅ `dotnet build` 0 错误 0 警告
+
+---
+
+## Debug #7：TrayApp 启动 API 后所有请求挂起
+
+### 现象
+
+TrayApp 成功启动后浏览器可以访问 `http://localhost:5000/` 前端页面，但所有 API 请求（`/api/movies`、`/api/settings` 等）全部"挂起"，浏览器 Network 面板显示 pending 无状态码。
+
+手动启动 API（`.\jav-manager-api.exe`）则完全正常。
+
+### 根因分析
+
+**stdout 缓冲区死锁**。TrayApp 的 `MainWindow.xaml.cs` 在启动 API 进程时设置了：
+
+```csharp
+RedirectStandardOutput = true,
+RedirectStandardError = true,
+```
+
+问题链路：
+1. API 进程的 Serilog Console sink 不断往 stdout 写日志
+2. stdout 管道缓冲区满（约 4KB）
+3. API 进程阻塞等待 TrayApp 读取 stdout
+4. TrayApp 从不读取 stdout（只等健康检查）
+5. 进程死锁 — 进程活着但无法处理任何 HTTP 请求
+
+手动启动正常是因为 stdout 直接输出到终端，没有重定向管道。
+
+### 诊断过程
+
+1. 浏览器 Network → settings 请求显示 "挂起" → 后端无响应
+2. 手动启动 API 测试 → `GET /api/settings` 返回 `{}` → 排除代码 bug
+3. `netstat` 确认端口无冲突
+4. 日志文件在 14:09 建表后戛然而止，无任何 HTTP 请求日志
+5. `Get-Process` 确认进程在运行但不响应 → 典型死锁特征
+
+### 修复内容
+
+| 文件 | 修改 |
+|---|---|
+| `jav-manager-tray/MainWindow.xaml.cs` | 移除 `RedirectStandardOutput = true` 和 `RedirectStandardError = true` |
+
+Serilog 已将日志完整写入 `Logs/` 文件，无需通过 stdout 管道二次捕获。
+
+### 验证结果
+
+- ✅ TrayApp 启动后所有 API 请求正常响应
+- ✅ `/api/settings` → 200 OK
+- ✅ `/api/movies` → 200 OK
 
 ---
 

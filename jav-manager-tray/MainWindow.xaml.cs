@@ -65,9 +65,7 @@ public partial class MainWindow : Window
                 Arguments = arguments,
                 WorkingDirectory = workingDir,
                 UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
+                CreateNoWindow = true
             },
             EnableRaisingEvents = true
         };
