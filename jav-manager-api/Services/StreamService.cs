@@ -65,17 +65,113 @@ public class StreamService
                 var rawBytes = File.ReadAllBytes(subtitlePath);
                 var encoding = DetectEncoding(rawBytes);
 
-                if (encoding != null && encoding != System.Text.Encoding.UTF8)
+                var text = encoding != null && encoding != System.Text.Encoding.UTF8
+                    ? System.Text.Encoding.UTF8.GetString(System.Text.Encoding.Convert(encoding, System.Text.Encoding.UTF8, rawBytes))
+                    : System.Text.Encoding.UTF8.GetString(rawBytes);
+
+                if (ext == ".srt")
                 {
-                    var utf8Bytes = System.Text.Encoding.Convert(encoding, System.Text.Encoding.UTF8, rawBytes);
-                    return (utf8Bytes, ext);
+                    text = ConvertSrtToVtt(text);
+                }
+                else if (ext == ".ass")
+                {
+                    text = ConvertAssToVtt(text);
                 }
 
-                return (rawBytes, ext);
+                return (System.Text.Encoding.UTF8.GetBytes(text), ".vtt");
             }
         }
 
         return null;
+    }
+
+    private static string ConvertSrtToVtt(string srt)
+    {
+        var lines = srt.Replace("\r\n", "\n").Replace("\r", "\n").Split('\n');
+        var result = new System.Text.StringBuilder();
+        result.AppendLine("WEBVTT");
+        result.AppendLine();
+
+        var i = 0;
+        while (i < lines.Length)
+        {
+            var line = lines[i].Trim();
+
+            if (string.IsNullOrEmpty(line))
+            {
+                i++;
+                continue;
+            }
+
+            if (int.TryParse(line, out _))
+            {
+                i++;
+                if (i < lines.Length && lines[i].Contains("-->"))
+                {
+                    var timeLine = lines[i].Replace(',', '.');
+                    result.AppendLine(timeLine);
+
+                    i++;
+                    while (i < lines.Length && !string.IsNullOrEmpty(lines[i]))
+                    {
+                        result.AppendLine(lines[i]);
+                        i++;
+                    }
+                    result.AppendLine();
+                }
+                continue;
+            }
+
+            i++;
+        }
+
+        return result.ToString();
+    }
+
+    private static string ConvertAssToVtt(string ass)
+    {
+        var lines = ass.Replace("\r\n", "\n").Replace("\r", "\n").Split('\n');
+        var result = new System.Text.StringBuilder();
+        result.AppendLine("WEBVTT");
+        result.AppendLine();
+
+        var inEvents = false;
+
+        foreach (var rawLine in lines)
+        {
+            var line = rawLine.Trim();
+
+            if (line.StartsWith("[Events]", StringComparison.OrdinalIgnoreCase))
+            {
+                inEvents = true;
+                continue;
+            }
+
+            if (inEvents && line.StartsWith("["))
+            {
+                inEvents = false;
+                continue;
+            }
+
+            if (!inEvents || !line.StartsWith("Dialogue:", StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            var parts = line.Substring("Dialogue:".Length).Split(',', 10);
+            if (parts.Length < 10) continue;
+
+            var start = parts[1].Trim();
+            var end = parts[2].Trim();
+            var text = parts[9].Trim();
+
+            text = text.Replace("\\N", "\n").Replace("\\n", "\n")
+                       .Replace("{\\", "<").Replace("}", ">");
+
+            result.AppendLine($"{start} --> {end}");
+            result.AppendLine(text);
+            result.AppendLine();
+        }
+
+        return result.ToString();
     }
 
     private static System.Text.Encoding? DetectEncoding(byte[] rawData)

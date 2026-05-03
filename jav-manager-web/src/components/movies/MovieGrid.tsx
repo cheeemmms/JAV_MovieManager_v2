@@ -54,7 +54,7 @@ function clearScrollPosition() {
 
 export function MovieGrid() {
   const gridRef = useRef<VirtuosoGridHandle>(null)
-  const scrollRowIndexRef = useRef(0)
+  const scrollMovieIndexRef = useRef(0)
   const [containerWidth, setContainerWidth] = useState(0)
   const navigationType = useNavigationType()
 
@@ -137,22 +137,25 @@ export function MovieGrid() {
   }, [navigationType])
 
   useEffect(() => {
-    if (navigationType === "POP" && rows.length > 0) {
-      const saved = loadScrollPosition()
-      if (saved && saved > 0) {
-        const timer = setTimeout(() => {
-          gridRef.current?.scrollToIndex(saved)
-          clearScrollPosition()
-        }, 300)
-        return () => clearTimeout(timer)
+    if (navigationType === "POP" && rows.length > 0 && movies.length > 0) {
+      const savedMovieIndex = loadScrollPosition()
+      if (savedMovieIndex && savedMovieIndex > 0) {
+        const rowIndex = Math.floor(savedMovieIndex / itemsPerRow)
+        if (rowIndex < rows.length) {
+          const timer = setTimeout(() => {
+            gridRef.current?.scrollToIndex(rowIndex)
+            clearScrollPosition()
+          }, 200)
+          return () => clearTimeout(timer)
+        }
       }
     }
-  }, [navigationType, rows.length])
+  }, [navigationType, rows.length, movies.length, itemsPerRow])
 
   useEffect(() => {
     return () => {
-      if (scrollRowIndexRef.current > 0) {
-        saveScrollPosition(scrollRowIndexRef.current)
+      if (scrollMovieIndexRef.current > 0) {
+        saveScrollPosition(scrollMovieIndexRef.current)
       }
     }
   }, [])
@@ -211,9 +214,8 @@ export function MovieGrid() {
         itemContent={(_, row) => {
           const firstMovie = row[0]
           const movieIndex = movies.indexOf(firstMovie)
-          const rowIndex = Math.floor(movieIndex / itemsPerRow)
-          if (!isNaN(rowIndex) && rowIndex > scrollRowIndexRef.current) {
-            scrollRowIndexRef.current = rowIndex
+          if (movieIndex >= 0 && movieIndex > scrollMovieIndexRef.current) {
+            scrollMovieIndexRef.current = movieIndex
           }
 
           return (

@@ -212,7 +212,7 @@ export function VideoPlayer() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-50 flex flex-col bg-black"
+      className="fixed inset-0 z-50 flex flex-col bg-black overflow-y-auto"
     >
       <button
         onClick={handleBack}
@@ -222,7 +222,7 @@ export function VideoPlayer() {
         <ArrowLeft className="h-6 w-6" />
       </button>
 
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="min-h-[50vh]">
         <DPlayerWrapper
           videoUrl={streamUrl}
           posterUrl={posterUrl}
