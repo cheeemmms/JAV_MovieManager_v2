@@ -13,6 +13,8 @@ import { usePlaybackRecording } from "@/hooks/usePlaybackRecording"
 import type { MovieViewModel } from "@/types/movie"
 import type DPlayer from "dplayer"
 
+const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)
+
 export function VideoPlayer() {
   const { imdbId } = useParams<{ imdbId: string }>()
   const navigate = useNavigate()
@@ -25,6 +27,7 @@ export function VideoPlayer() {
   const [videoError, setVideoError] = useState("")
   const progressRef = useRef(0)
   const hasCheckedHevcRef = useRef(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   const primaryActor = movie?.actors?.[0] ?? null
 
@@ -69,7 +72,6 @@ export function VideoPlayer() {
     staleTime: 60_000,
   })
 
-
   const streamUrl = getMediaUrl(`/stream/${imdbId}`)
   const subtitleUrl = getMediaUrl(`/stream/${imdbId}/subtitle`)
   const posterUrl = movie?.posterFileLocation
@@ -98,13 +100,6 @@ export function VideoPlayer() {
     if (!supported) setHevcWarning(true)
   }, [])
 
-  const handleReady = useCallback((player: DPlayer) => {
-    setDp(player)
-    setVideoError("")
-    checkHEVCSupport()
-    startRecording()
-  }, [checkHEVCSupport, startRecording])
-
   const handleVideoError = useCallback((error: string) => {
     if (error.includes("code 4") || error.includes("EXTERNAL_RENDERER") || error.includes("SRC_NOT_SUPPORTED")) {
       setVideoError("This video uses H.265/HEVC encoding, which is not supported on mobile browsers. Try playing on desktop, or use a media player app that supports HEVC.")
@@ -113,8 +108,21 @@ export function VideoPlayer() {
     }
   }, [])
 
+  const handleReady = useCallback((player: DPlayer) => {
+    setDp(player)
+    setVideoError("")
+    checkHEVCSupport()
+    startRecording()
+  }, [checkHEVCSupport, startRecording])
+
   const handleResume = useCallback(() => {
-    if (dp && movie) {
+    if (isMobile) {
+      const video = videoRef.current
+      if (video && movie) {
+        video.currentTime = (movie.progress / 100) * video.duration
+        video.play().catch(() => {})
+      }
+    } else if (dp && movie) {
       const seekTime = (movie.progress / 100) * dp.video.duration
       dp.seek(seekTime)
       dp.play()
@@ -162,6 +170,7 @@ export function VideoPlayer() {
   }, [imdbId, toggleFavorite])
 
   useEffect(() => {
+    if (isMobile) return
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!dp) return
       const target = e.target as HTMLElement
@@ -194,6 +203,27 @@ export function VideoPlayer() {
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [dp, handleBack])
+
+  const handleNativeTimeUpdate = useCallback(() => {
+    const video = videoRef.current
+    if (!video) return
+    handleTimeUpdate(video.currentTime, video.duration)
+  }, [handleTimeUpdate])
+
+  const handleNativeLoaded = useCallback(() => {
+    setVideoError("")
+    checkHEVCSupport()
+    startRecording()
+  }, [checkHEVCSupport, startRecording])
+
+  const handleNativeError = useCallback(() => {
+    const video = videoRef.current
+    if (!video) return
+    const msg = video.error
+      ? `Video error: ${video.error.message || "unknown"} (code ${video.error.code})`
+      : "Video failed to load"
+    handleVideoError(msg)
+  }, [handleVideoError])
 
   if (isLoading) {
     return (
@@ -235,18 +265,39 @@ export function VideoPlayer() {
       </button>
 
       <div className="relative" style={{ height: "calc(100vh - 8rem)" }}>
-        <DPlayerWrapper
-          videoUrl={streamUrl}
-          posterUrl={posterUrl}
-          subtitleUrl={subtitleUrl}
-          autoplay={!showResumePrompt}
-          onReady={handleReady}
-          onTimeUpdate={handleTimeUpdate}
-          onPlay={handlePlay}
-          onPause={handlePause}
-          onEnded={handleEnded}
-          onError={handleVideoError}
-        />
+        {isMobile ? (
+          <video
+            ref={videoRef}
+            src={streamUrl}
+            poster={posterUrl}
+            controls
+            autoPlay={!showResumePrompt}
+            onTimeUpdate={handleNativeTimeUpdate}
+            onPlay={handlePlay}
+            onPause={handlePause}
+            onEnded={handleEnded}
+            onError={handleNativeError}
+            onLoadedMetadata={handleNativeLoaded}
+            className="w-full h-full object-contain bg-black"
+          >
+            {subtitleUrl && (
+              <track kind="subtitles" src={subtitleUrl} default />
+            )}
+          </video>
+        ) : (
+          <DPlayerWrapper
+            videoUrl={streamUrl}
+            posterUrl={posterUrl}
+            subtitleUrl={subtitleUrl}
+            autoplay={!showResumePrompt}
+            onReady={handleReady}
+            onTimeUpdate={handleTimeUpdate}
+            onPlay={handlePlay}
+            onPause={handlePause}
+            onEnded={handleEnded}
+            onError={handleVideoError}
+          />
+        )}
 
         <AnimatePresence>
           {showResumePrompt && (

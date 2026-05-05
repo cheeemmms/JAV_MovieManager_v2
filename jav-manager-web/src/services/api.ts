@@ -70,7 +70,7 @@ export function getMediaUrl(path: string): string {
 
 function getMediaBase(): string {
   const { protocol, hostname } = window.location
-  if (protocol === "https:") {
+  if (protocol === "https:" && /Android/i.test(navigator.userAgent)) {
     const port = parseInt(window.location.port || "5000") + 1
     return `http://${hostname}:${port}/api`
   }
