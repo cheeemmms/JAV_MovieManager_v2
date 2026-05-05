@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator"
 import { ActorSearch } from "./ActorSearch"
 import { SavedFilters } from "./SavedFilters"
 import { useFilterStore } from "@/stores/filterStore"
-import { API_BASE } from "@/lib/constants"
+import { fetchJson } from "@/services/api"
 import { cn } from "@/lib/utils"
 
 interface FilterOptions {
@@ -20,10 +20,10 @@ interface FilterOptions {
 
 async function fetchFilterOptions(): Promise<FilterOptions> {
   const [genres, tags, directors, studios] = await Promise.all([
-    fetch(`${API_BASE}/genres`).then((r) => r.json()),
-    fetch(`${API_BASE}/tags`).then((r) => r.json()),
-    fetch(`${API_BASE}/directors`).then((r) => r.json()),
-    fetch(`${API_BASE}/studios`).then((r) => r.json()),
+    fetchJson<string[]>("/genres"),
+    fetchJson<string[]>("/tags"),
+    fetchJson<string[]>("/directors"),
+    fetchJson<string[]>("/studios"),
   ])
   return { genres, tags, directors, studios }
 }
@@ -148,8 +148,8 @@ export function FilterPanel({ onClose }: FilterPanelProps) {
     studios,
   }
 
-  const activeOptions = dimOptions[dimTab]
-  const activeSelected = dimSelected[dimTab]
+  const activeOptions = Array.isArray(dimOptions[dimTab]) ? dimOptions[dimTab] : []
+  const activeSelected = Array.isArray(dimSelected[dimTab]) ? dimSelected[dimTab] : []
 
   const visibleOptions = showAllDim
     ? activeOptions

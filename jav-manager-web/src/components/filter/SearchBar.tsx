@@ -9,7 +9,7 @@ import {
   CommandGroup,
   CommandItem,
 } from "@/components/ui/command"
-import { API_BASE } from "@/lib/constants"
+import { fetchJson } from "@/services/api"
 
 interface SearchResult {
   imdbId: string
@@ -20,9 +20,11 @@ interface SearchResult {
 
 async function searchMovies(query: string): Promise<SearchResult[]> {
   if (!query || query.length < 1) return []
-  const res = await fetch(`${API_BASE}/movies/search?term=${encodeURIComponent(query)}`)
-  if (!res.ok) return []
-  return res.json()
+  try {
+    return await fetchJson<SearchResult[]>(`/movies/search?term=${encodeURIComponent(query)}`)
+  } catch {
+    return []
+  }
 }
 
 interface SearchBarProps {

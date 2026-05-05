@@ -23,7 +23,15 @@ function applyTheme(resolved: "dark" | "light") {
   document.documentElement.classList.toggle("dark", resolved === "dark")
 }
 
-const savedTheme = (localStorage.getItem(THEME_KEY) as Theme) || "system"
+function safeGet(): Theme {
+  try { return (localStorage.getItem(THEME_KEY) as Theme) || "system" } catch { return "system" }
+}
+
+function safeSet(value: string) {
+  try { localStorage.setItem(THEME_KEY, value) } catch { /* ignore */ }
+}
+
+const savedTheme = safeGet()
 const initialResolved = resolveTheme(savedTheme)
 applyTheme(initialResolved)
 
@@ -35,7 +43,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
   setTheme: (theme) => {
     const resolved = resolveTheme(theme)
     applyTheme(resolved)
-    localStorage.setItem(THEME_KEY, theme)
+    safeSet(theme)
     set({ theme, resolved })
   },
   cycleTheme: () => {
@@ -44,7 +52,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
       const next = themeCycle[(idx + 1) % themeCycle.length]
       const resolved = resolveTheme(next)
       applyTheme(resolved)
-      localStorage.setItem(THEME_KEY, next)
+      safeSet(next)
       return { theme: next, resolved }
     })
   },

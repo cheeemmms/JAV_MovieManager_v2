@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { Play, Heart, Star } from "lucide-react"
 import { BlurhashImage } from "./BlurhashImage"
-import { API_BASE } from "@/lib/constants"
+import { getMediaUrl } from "@/services/api"
 import type { MovieViewModel } from "@/types/movie"
 
 interface MovieCardProps {
@@ -14,7 +14,7 @@ export function MovieCard({ movie, index = 0 }: MovieCardProps) {
   const navigate = useNavigate()
 
   const posterUrl = movie.posterFileLocation
-    ? `${API_BASE}/image/poster/${movie.imdbId}`
+    ? getMediaUrl(`/image/poster/${movie.imdbId}`)
     : ""
 
   const handleClick = () => {
@@ -42,7 +42,8 @@ export function MovieCard({ movie, index = 0 }: MovieCardProps) {
           zoomable
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent
+          opacity-0 md:group-hover:opacity-100 transition-opacity duration-300" />
 
         {movie.progress > 0 && movie.progress < 100 && (
           <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
@@ -62,15 +63,17 @@ export function MovieCard({ movie, index = 0 }: MovieCardProps) {
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          className="absolute bottom-2 right-2 md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2
+            opacity-70 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300"
           onClick={handlePlay}
         >
-          <div className="rounded-full bg-white/90 p-3 shadow-lg">
-            <Play className="h-6 w-6 fill-black text-black" />
+          <div className="rounded-full bg-white/90 p-2 md:p-3 shadow-lg">
+            <Play className="h-4 w-4 md:h-6 md:w-6 fill-black text-black" />
           </div>
         </motion.button>
 
-        <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+        <div className="absolute bottom-0 left-0 right-0 p-3
+          translate-y-full md:group-hover:translate-y-0 transition-transform duration-300">
           <p className="text-sm font-medium text-white line-clamp-2">
             {movie.title}
           </p>

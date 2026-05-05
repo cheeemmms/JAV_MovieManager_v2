@@ -2,7 +2,7 @@ import { useState, useCallback } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { Check, X } from "lucide-react"
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command"
-import { API_BASE } from "@/lib/constants"
+import { fetchJson } from "@/services/api"
 import { cn } from "@/lib/utils"
 
 interface Actor {
@@ -12,9 +12,11 @@ interface Actor {
 
 async function searchActors(query: string): Promise<Actor[]> {
   if (!query || query.length < 1) return []
-  const res = await fetch(`${API_BASE}/actors?search=${encodeURIComponent(query)}`)
-  if (!res.ok) return []
-  return res.json()
+  try {
+    return await fetchJson<Actor[]>(`/actors?search=${encodeURIComponent(query)}`)
+  } catch {
+    return []
+  }
 }
 
 interface ActorSearchProps {

@@ -4,7 +4,7 @@ import { useInfiniteQuery } from "@tanstack/react-query"
 import { useNavigationType } from "react-router-dom"
 import { MovieCard } from "./MovieCard"
 import { useFilterStore } from "@/stores/filterStore"
-import { API_BASE } from "@/lib/constants"
+import { fetchJson } from "@/services/api"
 import type { FilterResponse } from "@/types/filter"
 
 const PAGE_SIZE = 30
@@ -16,13 +16,10 @@ async function fetchMovies(
 ): Promise<FilterResponse> {
   const filterStore = useFilterStore.getState()
   const body = filterStore.buildApiRequest(page, pageSize)
-  const res = await fetch(`${API_BASE}/movies/filter`, {
+  return fetchJson("/movies/filter", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   })
-  if (!res.ok) throw new Error(`API error: ${res.status}`)
-  return res.json()
 }
 
 function saveScrollPosition(index: number) {

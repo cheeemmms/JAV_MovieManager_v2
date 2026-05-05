@@ -7,8 +7,8 @@ import { toast } from "sonner"
 import { DPlayerWrapper } from "./DPlayerWrapper"
 import { MovieCard } from "@/components/movies/MovieCard"
 import { useMovie, useToggleFavorite } from "@/services/movieService"
+import { fetchJson, getMediaUrl } from "@/services/api"
 import { usePlayerStore } from "@/stores/playerStore"
-import { API_BASE } from "@/lib/constants"
 import { usePlaybackRecording } from "@/hooks/usePlaybackRecording"
 import type { MovieViewModel } from "@/types/movie"
 import type DPlayer from "dplayer"
@@ -22,6 +22,7 @@ export function VideoPlayer() {
   const [dp, setDp] = useState<DPlayer | null>(null)
   const [dismissedFor, setDismissedFor] = useState<string | null>(null)
   const [hevcWarning, setHevcWarning] = useState(false)
+  const [videoError, setVideoError] = useState("")
   const progressRef = useRef(0)
   const hasCheckedHevcRef = useRef(false)
 
@@ -31,47 +32,48 @@ export function VideoPlayer() {
     queryKey: ["movies", "sameActor", primaryActor, imdbId],
     queryFn: async () => {
       if (!primaryActor) return []
-      const res = await fetch(`${API_BASE}/movies/filter`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          searchTerm: "",
-          actors: [primaryActor],
-          genres: [],
-          tags: [],
-          directors: [],
-          studios: [],
-          yearFrom: null,
-          yearTo: null,
-          heightFrom: null,
-          heightTo: null,
-          cups: [],
-          ageFrom: null,
-          ageTo: null,
-          ratingFrom: null,
-          playedMin: null,
-          playedMax: null,
-          favoriteOnly: false,
-          isAndOperator: false,
-          sortBy: "dateAdded",
-          sortOrder: "desc",
-          page: 1,
-          pageSize: 50,
-        }),
-      })
-      if (!res.ok) return []
-      const data = await res.json()
-      return (data.items as MovieViewModel[]).filter((m) => m.imdbId !== imdbId)
+      try {
+        const data = await fetchJson<{ items: MovieViewModel[] }>("/movies/filter", {
+          method: "POST",
+          body: JSON.stringify({
+            searchTerm: "",
+            actors: [primaryActor],
+            genres: [],
+            tags: [],
+            directors: [],
+            studios: [],
+            yearFrom: null,
+            yearTo: null,
+            heightFrom: null,
+            heightTo: null,
+            cups: [],
+            ageFrom: null,
+            ageTo: null,
+            ratingFrom: null,
+            playedMin: null,
+            playedMax: null,
+            favoriteOnly: false,
+            isAndOperator: false,
+            sortBy: "dateAdded",
+            sortOrder: "desc",
+            page: 1,
+            pageSize: 50,
+          }),
+        })
+        return data.items.filter((m) => m.imdbId !== imdbId)
+      } catch {
+        return []
+      }
     },
     enabled: !!primaryActor && !!imdbId,
     staleTime: 60_000,
   })
 
 
-  const streamUrl = `${API_BASE}/stream/${imdbId}`
-  const subtitleUrl = `${API_BASE}/stream/${imdbId}/subtitle`
+  const streamUrl = getMediaUrl(`/stream/${imdbId}`)
+  const subtitleUrl = getMediaUrl(`/stream/${imdbId}/subtitle`)
   const posterUrl = movie?.posterFileLocation
-    ? `${API_BASE}/image/poster/${imdbId}`
+    ? getMediaUrl(`/image/poster/${imdbId}`)
     : ""
 
   const { startRecording, endRecording } = usePlaybackRecording(imdbId ?? "")
@@ -98,9 +100,18 @@ export function VideoPlayer() {
 
   const handleReady = useCallback((player: DPlayer) => {
     setDp(player)
+    setVideoError("")
     checkHEVCSupport()
     startRecording()
   }, [checkHEVCSupport, startRecording])
+
+  const handleVideoError = useCallback((error: string) => {
+    if (error.includes("code 4") || error.includes("EXTERNAL_RENDERER") || error.includes("SRC_NOT_SUPPORTED")) {
+      setVideoError("This video uses H.265/HEVC encoding, which is not supported on mobile browsers. Try playing on desktop, or use a media player app that supports HEVC.")
+    } else {
+      setVideoError(error)
+    }
+  }, [])
 
   const handleResume = useCallback(() => {
     if (dp && movie) {
@@ -234,6 +245,7 @@ export function VideoPlayer() {
           onPlay={handlePlay}
           onPause={handlePause}
           onEnded={handleEnded}
+          onError={handleVideoError}
         />
 
         <AnimatePresence>
@@ -279,11 +291,27 @@ export function VideoPlayer() {
               className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20"
             >
               <div className="flex items-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/10 px-4 py-2 text-sm text-yellow-200 backdrop-blur">
-                <AlertTriangle className="h-4 w-4 text-yellow-400" />
-                <span>H.265/HEVC not supported by this browser. Video playback may fail.</span>
+                <AlertTriangle className="h-4 w-4 text-yellow-400 shrink-0" />
+                <span>H.265/HEVC encoding detected. Mobile browsers may not support this format. Use desktop or a media player app.</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {videoError && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="absolute bottom-24 left-1/2 -translate-x-1/2 z-20"
+            >
+              <div className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-2 text-sm text-red-200 backdrop-blur max-w-md">
+                <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                <span className="break-all">{videoError}</span>
                 <button
-                  onClick={() => setHevcWarning(false)}
-                  className="ml-2 text-yellow-300 hover:text-yellow-100"
+                  onClick={() => setVideoError("")}
+                  className="ml-2 text-red-300 hover:text-red-100 shrink-0"
                 >
                   Dismiss
                 </button>

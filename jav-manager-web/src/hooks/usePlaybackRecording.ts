@@ -1,5 +1,5 @@
 import { useRef, useCallback, useEffect } from "react"
-import { API_BASE } from "@/lib/constants"
+import { fetchJson } from "@/services/api"
 
 const SAVE_INTERVAL = 30000
 
@@ -18,9 +18,8 @@ export function usePlaybackRecording(movieId: string) {
     const now = Date.now()
     const duration = Math.floor((now - startTimeRef.current) / 1000)
     try {
-      await fetch(`${API_BASE}/history/${historyIdRef.current}`, {
+      await fetchJson(`/history/${historyIdRef.current}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ duration, percentage }),
       })
     } catch {
@@ -32,12 +31,10 @@ export function usePlaybackRecording(movieId: string) {
     if (!movieIdRef.current) return
     startTimeRef.current = Date.now()
     try {
-      const res = await fetch(`${API_BASE}/history`, {
+      const data = await fetchJson<{ id: number }>("/history", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ movieId: movieIdRef.current, duration: 0, percentage: 0 }),
       })
-      const data = await res.json()
       historyIdRef.current = data.id
 
       intervalRef.current = setInterval(() => {

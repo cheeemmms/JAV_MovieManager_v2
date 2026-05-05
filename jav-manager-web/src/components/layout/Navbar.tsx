@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom"
-import { Search, SlidersHorizontal, Sun, Moon, Monitor, Shuffle } from "lucide-react"
+import { Search, SlidersHorizontal, Sun, Moon, Monitor, Shuffle, AlignJustify } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -47,12 +47,12 @@ export function Navbar() {
       <div className="flex h-14 items-center px-4">
         <Link
           to="/"
-          className="mr-6 font-bold text-lg"
+          className="mr-6 font-bold text-lg shrink-0"
           onClick={() => useFilterStore.getState().resetFilters()}
         >
           JAV Manager
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-2">
           <Button variant="ghost" asChild>
             <Link to="/">Movies</Link>
           </Button>
@@ -66,17 +66,40 @@ export function Navbar() {
             <Link to="/settings">Settings</Link>
           </Button>
         </div>
+        <div className="md:hidden">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <AlignJustify className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onClick={() => navigate("/")}>
+                Movies
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/actors")}>
+                Actors
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                Dashboard
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/settings")}>
+                Settings
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         <div className="flex-1" />
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="h-8 w-[200px] justify-start gap-2 text-muted-foreground"
+            className="h-8 md:w-[200px] justify-start gap-2 text-muted-foreground"
             onClick={openSearch}
           >
             <Search className="h-4 w-4" />
-            <span>Search movies...</span>
-            <kbd className="ml-auto rounded border bg-muted px-1.5 text-xs">/</kbd>
+            <span className="hidden md:inline">Search movies...</span>
+            <kbd className="hidden md:inline ml-auto rounded border bg-muted px-1.5 text-xs">/</kbd>
           </Button>
           <Button variant="ghost" size="icon" className="h-8 w-8" title="Shuffle" onClick={handleShuffle}>
             <Shuffle className="h-4 w-4" />

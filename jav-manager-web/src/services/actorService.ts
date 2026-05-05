@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { API_BASE } from "@/lib/constants"
+import { fetchJson } from "./api"
 
 export interface ActorViewModel {
   name: string
@@ -16,12 +16,6 @@ export interface ActorViewModel {
   lastUpdated: string
   favorite: boolean
   movieCount: number
-}
-
-async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(`${API_BASE}${url}`)
-  if (!res.ok) throw new Error(`API error: ${res.status}`)
-  return res.json()
 }
 
 export function useActors(search?: string) {

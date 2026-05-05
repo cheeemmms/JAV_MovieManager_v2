@@ -29,7 +29,7 @@ function loadSavedFilters(): SavedFilter[] {
 }
 
 function saveToStorage(filters: SavedFilter[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(filters))
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(filters)) } catch { /* ignore */ }
 }
 
 interface SavedFiltersProps {

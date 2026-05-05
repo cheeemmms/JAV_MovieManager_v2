@@ -50,7 +50,7 @@ export function AppLayout() {
         <div
           className={cn(
             "transition-all duration-300 ease-in-out border-l",
-            filterOpen ? "w-[480px]" : "w-0 overflow-hidden border-l-0"
+            filterOpen ? "w-full md:w-[480px]" : "w-0 overflow-hidden border-l-0"
           )}
         >
           <FilterPanel onClose={handleFilterClose} />

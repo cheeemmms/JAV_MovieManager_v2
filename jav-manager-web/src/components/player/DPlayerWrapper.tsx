@@ -12,25 +12,27 @@ interface DPlayerWrapperProps {
   onPause?: () => void
   onEnded?: () => void
   onReady?: (dp: DPlayer) => void
+  onError?: (error: string) => void
 }
 
 export function DPlayerWrapper({
   videoUrl,
   posterUrl,
   subtitleUrl,
-  autoplay = true,
+  autoplay = false,
   onTimeUpdate,
   onPlay,
   onPause,
   onEnded,
   onReady,
+  onError,
 }: DPlayerWrapperProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const dpRef = useRef<DPlayer | null>(null)
-  const callbacksRef = useRef({ onTimeUpdate, onPlay, onPause, onEnded, onReady })
+  const callbacksRef = useRef({ onTimeUpdate, onPlay, onPause, onEnded, onReady, onError })
 
   useEffect(() => {
-    callbacksRef.current = { onTimeUpdate, onPlay, onPause, onEnded, onReady }
+    callbacksRef.current = { onTimeUpdate, onPlay, onPause, onEnded, onReady, onError }
   })
 
   useEffect(() => {
@@ -66,17 +68,30 @@ export function DPlayerWrapper({
     const handlePlay = () => callbacksRef.current.onPlay?.()
     const handlePause = () => callbacksRef.current.onPause?.()
     const handleEnded = () => callbacksRef.current.onEnded?.()
+    const handleError = () => {
+      const video = dp.video as HTMLVideoElement
+      const msg = video.error
+        ? `Video error: ${video.error.message || "unknown"} (code ${video.error.code})`
+        : "Video failed to load"
+      callbacksRef.current.onError?.(msg)
+    }
 
     dp.on("timeupdate", handleTimeUpdate)
     dp.on("play", handlePlay)
     dp.on("pause", handlePause)
     dp.on("ended", handleEnded)
 
+    const videoEl = dp.video as HTMLVideoElement
+    videoEl.setAttribute("playsinline", "")
+    videoEl.setAttribute("webkit-playsinline", "")
+    videoEl.addEventListener("error", handleError)
+
     return () => {
+      videoEl.removeEventListener("error", handleError)
       try {
         dp.destroy()
       } catch {
-        // destroy 内部可能因 DPlayer 状态不一致而抛出，忽略即可
+        // ignore
       }
       dpRef.current = null
     }

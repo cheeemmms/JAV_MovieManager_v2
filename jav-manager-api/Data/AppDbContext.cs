@@ -20,6 +20,7 @@ public class AppDbContext : DbContext
     public DbSet<PlayList> PlayLists => Set<PlayList>();
     public DbSet<PlayListItem> PlayListItems => Set<PlayListItem>();
     public DbSet<UserSettings> UserSettings => Set<UserSettings>();
+    public DbSet<AccessToken> AccessTokens => Set<AccessToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -43,6 +44,11 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<UserSettings>(entity =>
         {
             entity.HasIndex(s => s.Key).IsUnique();
+        });
+
+        modelBuilder.Entity<AccessToken>(entity =>
+        {
+            entity.HasIndex(t => t.TokenHash).IsUnique();
         });
 
         modelBuilder.Entity<MovieActor>(entity =>

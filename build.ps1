@@ -25,11 +25,12 @@ function Clear-Directory {
             $itemPath = Join-Path $Path $name
             if (Test-Path $itemPath) {
                 $tempPath = "$itemPath.preserve"
+                Remove-Item $tempPath -Recurse -Force -ErrorAction SilentlyContinue
                 Rename-Item $itemPath $tempPath -Force
                 $preservedItems[$name] = $tempPath
             }
         }
-        Remove-Item -Recurse -Force "$Path\*"
+        Get-ChildItem -Path $Path -Exclude "*.preserve" | Remove-Item -Recurse -Force
         foreach ($kv in $preservedItems.GetEnumerator()) {
             $originalPath = Join-Path $Path $kv.Key
             Rename-Item $kv.Value $originalPath
@@ -57,7 +58,7 @@ Write-Host "[2/3] Publishing API..." -ForegroundColor Yellow
 $apiDir = Join-Path $root "jav-manager-api"
 Push-Location $apiDir
 try {
-    Clear-Directory $apiPublishDir -Preserve @("Data", "Logs")
+    Clear-Directory $apiPublishDir -Preserve @("Data", "Logs", "Certs")
     dotnet publish -c $Configuration -o $apiPublishDir --self-contained true
     Write-Host "  API published to $apiPublishDir" -ForegroundColor Green
 }

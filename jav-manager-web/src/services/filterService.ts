@@ -1,15 +1,6 @@
-import { API_BASE } from "@/lib/constants"
+import { fetchJson } from "./api"
 import type { FilterRequest, FilterResponse } from "@/types/filter"
 import type { MovieViewModel } from "@/types/movie"
-
-async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${url}`, {
-    headers: { "Content-Type": "application/json" },
-    ...options,
-  })
-  if (!res.ok) throw new Error(`API error: ${res.status}`)
-  return res.json()
-}
 
 export async function fetchFilterOptions(): Promise<{
   genres: string[]

@@ -1,16 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { API_BASE } from "@/lib/constants"
-import type { FilterRequest, FilterResponse } from "@/types/filter"
+import { fetchJson } from "./api"
 import type { Movie, MovieViewModel } from "@/types/movie"
-
-async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${url}`, {
-    headers: { "Content-Type": "application/json" },
-    ...options,
-  })
-  if (!res.ok) throw new Error(`API error: ${res.status}`)
-  return res.json()
-}
+import type { FilterRequest, FilterResponse } from "@/types/filter"
 
 export function useMovies(page: number, pageSize: number) {
   return useQuery({

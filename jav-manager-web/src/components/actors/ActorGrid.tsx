@@ -4,7 +4,7 @@ import { Search, Users } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { useActors } from "@/services/actorService"
 import { useFilterStore } from "@/stores/filterStore"
-import { API_BASE } from "@/lib/constants"
+import { getMediaUrl } from "@/services/api"
 
 export function ActorGrid() {
   const [search, setSearch] = useState("")
@@ -69,7 +69,7 @@ export function ActorGrid() {
             >
               <div className="flex items-center gap-3">
                 <img
-                  src={`${API_BASE}/image/actor/${encodeURIComponent(actor.name)}`}
+                  src={getMediaUrl(`/image/actor/${encodeURIComponent(actor.name)}`)}
                   alt={actor.name}
                   className="h-12 w-12 rounded-full object-cover bg-muted shrink-0"
                   onError={(e) => {

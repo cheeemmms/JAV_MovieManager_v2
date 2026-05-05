@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { useMovie, useToggleFavorite } from "@/services/movieService"
 import { useFilterStore } from "@/stores/filterStore"
-import { API_BASE } from "@/lib/constants"
+import { getMediaUrl } from "@/services/api"
 
 export function MovieDetail() {
   const { imdbId } = useParams<{ imdbId: string }>()
@@ -16,11 +16,11 @@ export function MovieDetail() {
   const toggleFavorite = useToggleFavorite()
 
   const posterUrl = movie?.posterFileLocation
-    ? `${API_BASE}/image/poster/${movie.imdbId}`
+    ? getMediaUrl(`/image/poster/${movie.imdbId}`)
     : ""
 
   const fanartUrl = movie?.fanArtLocation
-    ? `${API_BASE}/image/fanart/${movie.imdbId}`
+    ? getMediaUrl(`/image/fanart/${movie.imdbId}`)
     : ""
 
   const handlePlay = () => {

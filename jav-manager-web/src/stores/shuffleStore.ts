@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import { API_BASE } from "@/lib/constants"
+import { fetchJson } from "@/services/api"
 
 const STORAGE_KEY = "jav-manager-shuffle"
 
@@ -57,9 +57,7 @@ export const useShuffleStore = create<ShuffleState>((set, get) => ({
 
     set({ loading: true })
     try {
-      const res = await fetch(`${API_BASE}/movies?sortBy=DateAdded&sortOrder=desc`)
-      if (!res.ok) throw new Error("Failed to fetch movies")
-      const movies: { imdbId: string }[] = await res.json()
+      const movies = await fetchJson<{ imdbId: string }[]>("/movies?sortBy=DateAdded&sortOrder=desc")
       const movieIds = movies.map((m) => m.imdbId)
       const shuffled = fisherYatesShuffle(movieIds)
       saveToStorage(shuffled, 0)
@@ -85,7 +83,7 @@ export const useShuffleStore = create<ShuffleState>((set, get) => ({
   },
 
   reset: () => {
-    sessionStorage.removeItem(STORAGE_KEY)
+    try { sessionStorage.removeItem(STORAGE_KEY) } catch { /* ignore */ }
     set({ ids: [], index: 0, loading: false })
   },
 }))
