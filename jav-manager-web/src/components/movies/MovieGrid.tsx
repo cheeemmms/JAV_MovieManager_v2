@@ -150,46 +150,29 @@ export function MovieGrid() {
     }
   }, [])
 
-  if (isLoading || containerWidth === 0) {
-    return (
-      <div className="container py-8">
+  return (
+    <div ref={containerRef} className="w-full max-w-[1920px] mx-auto px-4 py-4">
+      {isLoading || containerWidth === 0 ? (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {Array.from({ length: 12 }).map((_, i) => (
             <div key={i} className="aspect-[2/3] animate-pulse rounded-lg bg-muted" />
           ))}
         </div>
-      </div>
-    )
-  }
-
-  if (isError) {
-    return (
-      <div className="container py-8">
+      ) : isError ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <p className="text-lg font-medium text-destructive">Failed to load movies</p>
           <p className="mt-2 text-sm text-muted-foreground">
             Make sure the API server is running on port 5000
           </p>
         </div>
-      </div>
-    )
-  }
-
-  if (movies.length === 0) {
-    return (
-      <div className="container py-8">
+      ) : movies.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <p className="text-lg font-medium text-muted-foreground">No movies found</p>
           <p className="mt-2 text-sm text-muted-foreground">
             Scan your movie directory or adjust your filters
           </p>
         </div>
-      </div>
-    )
-  }
-
-  return (
-    <div ref={containerRef} className="w-full max-w-[1920px] mx-auto px-4 py-4">
+      ) : (
       <VirtuosoGrid
         ref={gridRef}
         style={{ height: "calc(100vh - 4rem)" }}
@@ -230,6 +213,7 @@ export function MovieGrid() {
             ) : null,
         }}
       />
+      )}
     </div>
   )
 }
