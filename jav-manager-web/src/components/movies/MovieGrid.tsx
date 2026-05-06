@@ -127,29 +127,20 @@ export function MovieGrid() {
   }, [movies, itemsPerRow])
 
   const initialTopMostItemIndex = useMemo(() => {
+    if (navigationType === "POP" && itemsPerRow > 0) {
+      const saved = loadScrollPosition()
+      if (saved && saved > 0) {
+        return Math.floor(saved / itemsPerRow)
+      }
+    }
+    return 0
+  }, [navigationType, itemsPerRow])
+
+  useEffect(() => {
     if (navigationType === "PUSH") {
       clearScrollPosition()
     }
-    return 0
   }, [navigationType])
-
-  const restoreAttemptedRef = useRef(false)
-
-  useEffect(() => {
-    if (navigationType === "POP" && rows.length > 0 && movies.length > 0 && !restoreAttemptedRef.current) {
-      restoreAttemptedRef.current = true
-      const savedMovieIndex = loadScrollPosition()
-      if (savedMovieIndex && savedMovieIndex > 0) {
-        const rowIndex = Math.floor(savedMovieIndex / itemsPerRow)
-        if (rowIndex < rows.length) {
-          const timer = setTimeout(() => {
-            gridRef.current?.scrollToIndex(rowIndex)
-          }, 200)
-          return () => clearTimeout(timer)
-        }
-      }
-    }
-  }, [navigationType, rows.length, movies.length, itemsPerRow])
 
   useEffect(() => {
     return () => {
@@ -159,7 +150,7 @@ export function MovieGrid() {
     }
   }, [])
 
-  if (isLoading) {
+  if (isLoading || containerWidth === 0) {
     return (
       <div className="container py-8">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
