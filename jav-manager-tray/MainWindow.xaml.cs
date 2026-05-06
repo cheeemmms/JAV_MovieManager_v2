@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -10,10 +11,12 @@ public partial class MainWindow : Window
 {
     private Process? _apiProcess;
     private NotifyIcon? _notifyIcon;
+    private HttpClient? _httpClient;
+    private string _protocol = "http";
+    private int _port = 5000;
     private const int DefaultPort = 5000;
     private const int HealthCheckRetries = 30;
     private const int HealthCheckDelayMs = 1000;
-    private static readonly HttpClient _httpClient = new() { Timeout = TimeSpan.FromSeconds(3) };
     private bool _isShuttingDown;
 
     public MainWindow()
@@ -57,6 +60,16 @@ public partial class MainWindow : Window
             return;
         }
 
+        (_protocol, _port) = GetApiConfig(workingDir!);
+
+        _httpClient = _protocol == "https"
+            ? new HttpClient(new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+            })
+            : new HttpClient();
+        _httpClient.Timeout = TimeSpan.FromSeconds(3);
+
         _apiProcess = new Process
         {
             StartInfo = new ProcessStartInfo
@@ -70,7 +83,7 @@ public partial class MainWindow : Window
             EnableRaisingEvents = true
         };
 
-        _apiProcess.StartInfo.EnvironmentVariables["ASPNETCORE_URLS"] = $"http://localhost:{DefaultPort}";
+        _apiProcess.StartInfo.EnvironmentVariables["ASPNETCORE_URLS"] = $"{_protocol}://localhost:{_port}";
         _apiProcess.StartInfo.EnvironmentVariables["ASPNETCORE_ENVIRONMENT"] = "Production";
 
         _apiProcess.Exited += OnApiProcessExited;
@@ -89,14 +102,14 @@ public partial class MainWindow : Window
 
     private async Task WaitForApiReady()
     {
-        var healthUrl = $"http://localhost:{DefaultPort}";
+        var healthUrl = $"{_protocol}://localhost:{_port}";
         for (var i = 0; i < HealthCheckRetries; i++)
         {
             if (_isShuttingDown) return;
 
             try
             {
-                var response = await _httpClient.GetAsync(healthUrl);
+                var response = await _httpClient!.GetAsync(healthUrl);
                 if (response.IsSuccessStatusCode || (int)response.StatusCode >= 400)
                     return;
             }
@@ -124,6 +137,32 @@ public partial class MainWindow : Window
             e.Cancel = true;
             Shutdown();
         }
+    }
+
+    private static (string protocol, int port) GetApiConfig(string workingDir)
+    {
+        try
+        {
+            var configPath = Path.Combine(workingDir, "appsettings.json");
+            if (File.Exists(configPath))
+            {
+                using var doc = JsonDocument.Parse(File.ReadAllText(configPath));
+                var root = doc.RootElement;
+
+                if (root.TryGetProperty("RemoteAccess", out var remote))
+                {
+                    var enabled = remote.TryGetProperty("Enabled", out var e) && e.GetBoolean();
+                    var useHttps = remote.TryGetProperty("UseHttps", out var h) && h.GetBoolean();
+                    var port = remote.TryGetProperty("Port", out var p) && p.TryGetInt32(out var v) ? v : DefaultPort;
+
+                    if (enabled && useHttps)
+                        return ("https", port);
+                }
+            }
+        }
+        catch { }
+
+        return ("http", DefaultPort);
     }
 
     private static (string? executable, string? workingDir, string? arguments) FindApiExecutable()
@@ -156,11 +195,11 @@ public partial class MainWindow : Window
         return (null, null, null);
     }
 
-    private static void OpenBrowser()
+    private void OpenBrowser()
     {
         Process.Start(new ProcessStartInfo
         {
-            FileName = $"http://localhost:{DefaultPort}",
+            FileName = $"{_protocol}://localhost:{_port}",
             UseShellExecute = true
         });
     }
